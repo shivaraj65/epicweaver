@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@prisma/client": "^5.7.1",
     "antd": "^5.12.5",
     "axios": "^1.6.3",
     "langchain": "^0.0.212",
