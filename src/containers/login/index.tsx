@@ -11,7 +11,6 @@ import {
   EyeTwoTone,
 } from "@ant-design/icons";
 
-import LoginBg from "@/assets/images/s-o-c-i-a-l-c-u-t-FluPNkHfCTs-unsplash.jpg";
 
 const LoginContainer = () => {
   const [email, setEmail] = useState("");
@@ -60,7 +59,7 @@ const LoginContainer = () => {
               LOGIN
             </Button>
             <p className={styles.loginLink}>
-              Don't have an Account! <Link href="/signup">Signup</Link>
+              Don&apos;t have an Account! <Link href="/signup">Signup</Link>
             </p>
           </div>
         </Col>
