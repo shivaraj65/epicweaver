@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "./signup.module.css";
 
+import axios from "axios";
+
 import { Button, Row, Col, Input } from "antd";
 import {
   UserOutlined,
@@ -16,12 +18,35 @@ const SignupContainer = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const submit = () => {
+  const submit = async () => {
     console.log("submit action");
     console.log(name, email, password);
     //api call
+
+    let body = {
+      name: name,
+      email: email,
+      password: password,
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/signup", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    console.log(result);
+    // let response = await axios.post('/api/signup', {
+    //   name: 'exampleUsername',
+    //   email: 'example@email.com',
+    //   password: 'examplePassword',
+    // });
+    // console.log('Signup successful:', response.data);
   };
-  
+
   return (
     <div>
       <Row className={styles.signupRow}>

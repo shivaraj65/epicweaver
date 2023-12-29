@@ -16,10 +16,26 @@ const LoginContainer = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const submit = () => {
+  const submit = async() => {
     console.log("submit action");
     console.log(email, password);
     //api call
+
+    let body = {
+      email: email,
+      password: password,
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/login", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    console.log(result);
   };
 
   return (
