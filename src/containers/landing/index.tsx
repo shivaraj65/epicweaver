@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import styles from "./landing.module.css";
 
 import { Button, Row, Col, Card } from "antd";
@@ -10,6 +11,7 @@ const { Meta } = Card;
 import Image1 from "@/assets/images/tyler-nix-q-motCAvPBM-unsplash.jpg";
 
 const Landing = () => {
+  const router = useRouter();
   const [test, settest] = useState(null);
 
   return (
@@ -23,10 +25,18 @@ const Landing = () => {
           </h5>
           <br />
           <div className={styles.buttonContainer}>
-            <Button className={styles.button1} size="large">
+            <Button
+              className={styles.button1}
+              size="large"
+              onClick={() => router.push("/signup")}
+            >
               Signup
             </Button>
-            <Button className={styles.button2} size="large">
+            <Button
+              className={styles.button2}
+              size="large"
+              onClick={() => router.push("/login")}
+            >
               Login
             </Button>
           </div>
