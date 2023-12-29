@@ -59,3 +59,16 @@
     font-family: "Noto Sans", sans-serif;
     font-weight: 400;
 }
+
+.closeFloater{
+    display: block;
+    z-index: 10;
+    position: absolute;
+    top:15px;
+    right:15px;
+    color: #57c5b6;
+}
+
+.closeFloater:hover{
+    cursor: pointer;
+}

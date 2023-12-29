@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
+import { sha512 } from 'js-sha512';
 
 type Data = {
   data: any;
@@ -19,7 +20,7 @@ export default async function handler(
         id: uuidv4(),
         name: req.body?.name,
         email: req.body?.email,
-        password: req.body?.password,
+        password: sha512(req.body?.password),
       },
     });
     prisma.$disconnect();

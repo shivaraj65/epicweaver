@@ -3,7 +3,7 @@
 }
 
 .signupImage{
-    background-image: url("../../assets//images/etienne-girardet-EP6_VZhzXM8-unsplash.jpg");
+    background-image: url("../../assets//images/etienne-girardet-EP6_VZhzXM8-uns.jpg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -58,4 +58,17 @@
     color: #b4b4b4;
     font-family: "Noto Sans", sans-serif;
     font-weight: 400;
+}
+
+.closeFloater{
+    display: block;
+    z-index: 10;
+    position: absolute;
+    top:15px;
+    right:15px;
+    color: #57c5b6;
+}
+
+.closeFloater:hover{
+    cursor: pointer;
 }

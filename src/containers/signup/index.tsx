@@ -4,16 +4,18 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "./signup.module.css";
 
-import axios from "axios";
 
 import { Button, Row, Col, Input } from "antd";
 import {
   UserOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
+  CloseOutlined,
 } from "@ant-design/icons";
 
 const SignupContainer = () => {
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,8 +24,7 @@ const SignupContainer = () => {
     console.log("submit action");
     console.log(name, email, password);
     //api call
-    if(name !=="" ){
-
+    if (name !== "") {
     }
 
     let body = {
@@ -42,16 +43,13 @@ const SignupContainer = () => {
     const resWithoutStreaming = await new Response(response.body).text();
     const result = await JSON.parse(resWithoutStreaming);
     console.log(result);
-    // let response = await axios.post('/api/signup', {
-    //   name: 'exampleUsername',
-    //   email: 'example@email.com',
-    //   password: 'examplePassword',
-    // });
-    // console.log('Signup successful:', response.data);
   };
 
   return (
     <div>
+      <div className={styles.closeFloater} onClick={() => router.push("/")}>
+        <CloseOutlined />
+      </div>
       <Row className={styles.signupRow}>
         <Col span={16} className={styles.signupImage}></Col>
         <Col span={8} className={styles.signupCardOuter}>

@@ -9,10 +9,13 @@ import {
   UserOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
+  CloseOutlined
 } from "@ant-design/icons";
 
 
 const LoginContainer = () => {
+  const router = useRouter();
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -40,6 +43,9 @@ const LoginContainer = () => {
 
   return (
     <div>
+      <div className={styles.closeFloater} onClick={() => router.push("/")}>
+        <CloseOutlined />
+      </div>
       <Row className={styles.loginRow}>
         <Col span={16} className={styles.loginImage}></Col>
         <Col span={8} className={styles.loginCardOuter}>
