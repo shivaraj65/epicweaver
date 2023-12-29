@@ -4,7 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "./login.module.css";
 
-import { Button, Row, Col, Input } from "antd";
+import userCreds from "@/store/userCreds";
+import { useShallow } from "zustand/react/shallow";
+
+import { Button, Row, Col, Input, message } from "antd";
 import {
   UserOutlined,
   EyeInvisibleOutlined,
@@ -15,6 +18,12 @@ import {
 const LoginContainer = () => {
   const router = useRouter();
 
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [credentials, setCredentials] = userCreds(
+    useShallow((state) => [state.credentials, state.setCredentials])
+  );
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -22,29 +31,54 @@ const LoginContainer = () => {
     console.log("submit action");
     console.log(email, password);
     //api call
-
-
-    let body = {
-      email: email,
-      password: password,
-    };
-    const requestOptions: RequestInit = {
-      method: "POST",
-      headers: {
-        "Content-Type": " application/json; charset=utf-8",
-      },
-      body: JSON.stringify(body),
-    };
-    const response = await fetch("/api/login", requestOptions);
-    const resWithoutStreaming = await new Response(response.body).text();
-    const result = await JSON.parse(resWithoutStreaming);
-    console.log(result);
+    if (email !== "" && password !== "") {
+      let body = {
+        email: email,
+        password: password,
+      };
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": " application/json; charset=utf-8",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch("/api/login", requestOptions);
+      const resWithoutStreaming = await new Response(response.body).text();
+      const result = await JSON.parse(resWithoutStreaming);
+      console.log(result);
+      if (result.status === "success" && result.data.length > 0) {
+        setCredentials(result[0]);
+        router.push("/dashboard");
+      } else if (result.status === "failed" && result.data.length > 0) {
+        messageApi.open({
+          type: "error",
+          content: "email / password is invalid. try again!",
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "OOPS! server error. try again later.",
+        });
+      }
+    } else {
+      if (email === "") {
+        messageApi.open({
+          type: "warning",
+          content: "email field is empty",
+        });
+      } else if (password === "") {
+        messageApi.open({
+          type: "warning",
+          content: "password field is empty",
+        });
+      }
+    }
   };
-
-
 
   return (
     <div>
+      {contextHolder}
       <div className={styles.closeFloater} onClick={() => router.push("/")}>
         <CloseOutlined />
       </div>

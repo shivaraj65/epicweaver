@@ -56,8 +56,11 @@ const SignupContainer = () => {
           type: "warning",
           content: "User Already Exist!",
         });
+        setName("");
+        setEmail("");
+        setPassword("");
       }else{
-        setCredentials(result)
+        // setCredentials(result)
         router.push("/")
       }
       

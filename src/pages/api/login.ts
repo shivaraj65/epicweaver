@@ -15,7 +15,7 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     let res1 = await prisma.user.findMany({
       where: {
         email: req.body?.email,
@@ -25,7 +25,7 @@ export default async function handler(
       },
     });
     prisma.$disconnect();
-    console.log(res1)
+    // console.log(res1)
     if (
       res1[0].email === req.body.email &&
       res1[0].password === sha512(req.body.password)
