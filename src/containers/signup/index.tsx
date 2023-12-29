@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "./signup.module.css";
 
+import userCreds from "@/store/userCreds";
+import { useShallow } from "zustand/react/shallow";
 
-import { Button, Row, Col, Input } from "antd";
+import { Button, Row, Col, Input, message } from "antd";
 import {
   UserOutlined,
   EyeInvisibleOutlined,
@@ -16,6 +18,12 @@ import {
 const SignupContainer = () => {
   const router = useRouter();
 
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [credentials, setCredentials] = userCreds(
+    useShallow((state) => [state.credentials, state.setCredentials])
+  );
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,29 +32,68 @@ const SignupContainer = () => {
     console.log("submit action");
     console.log(name, email, password);
     //api call
-    if (name !== "") {
+    if (name !== "" && isValidEmail(email) && isValidPassword(password)) {
+      let body = {
+        name: name,
+        email: email,
+        password: password,
+      };
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": " application/json; charset=utf-8",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch("/api/signup", requestOptions);
+      const resWithoutStreaming = await new Response(response.body).text();
+      const result = await JSON.parse(resWithoutStreaming);
+      console.log(result);
+      //save the res to zustand.
+      if(result.status === 'userExist'){
+        //notify here
+        messageApi.open({
+          type: "warning",
+          content: "User Already Exist!",
+        });
+      }else{
+        setCredentials(result)
+        router.push("/")
+      }
+      
+    } else {
+      if (name === "") {
+        messageApi.open({
+          type: "warning",
+          content: "Name field cannot be empty",
+        });
+      } else if (!isValidEmail(email)) {
+        messageApi.open({
+          type: "warning",
+          content: "entered EMAIL is not valid",
+        });
+      } else if (!isValidPassword(password)) {
+        messageApi.open({
+          type: "warning",
+          content: "Password must be atleast 8 characters",
+        });
+      }
     }
-
-    let body = {
-      name: name,
-      email: email,
-      password: password,
-    };
-    const requestOptions: RequestInit = {
-      method: "POST",
-      headers: {
-        "Content-Type": " application/json; charset=utf-8",
-      },
-      body: JSON.stringify(body),
-    };
-    const response = await fetch("/api/signup", requestOptions);
-    const resWithoutStreaming = await new Response(response.body).text();
-    const result = await JSON.parse(resWithoutStreaming);
-    console.log(result);
   };
+
+  function isValidEmail(email: string) {
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return emailRegex.test(email);
+  }
+
+  function isValidPassword(password: string) {
+    const regex =  /^.{8,}$/;
+    return regex.test(password);
+  }
 
   return (
     <div>
+      {contextHolder}
       <div className={styles.closeFloater} onClick={() => router.push("/")}>
         <CloseOutlined />
       </div>

@@ -5,6 +5,7 @@ import { sha512 } from 'js-sha512';
 
 type Data = {
   data: any;
+  status:any;
 };
 
 const prisma = new PrismaClient();
@@ -14,7 +15,20 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   try {
-    console.log(req.body);
+    // console.log(req.body);
+    //check for existing users
+    let test = await prisma.user.findMany({
+      where: {
+        email: req.body?.email,
+      },
+      orderBy: {
+        name: "desc",
+      },
+    });
+    if(test.length>0){
+      prisma.$disconnect();
+      res.status(200).json({ data: null,status:"userExist" });
+    }
     let res1 = await prisma.user.create({
       data: {
         id: uuidv4(),
@@ -25,7 +39,7 @@ export default async function handler(
     });
     prisma.$disconnect();
     // console.log(res1);
-    res.status(200).json({ data: res1 });
+    res.status(200).json({ data: res1,status:"success" });
   } catch (err) {
     console.log(err);
   }

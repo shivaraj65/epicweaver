@@ -9,20 +9,20 @@ import {
   UserOutlined,
   EyeInvisibleOutlined,
   EyeTwoTone,
-  CloseOutlined
+  CloseOutlined,
 } from "@ant-design/icons";
-
 
 const LoginContainer = () => {
   const router = useRouter();
-  
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const submit = async() => {
+  const submit = async () => {
     console.log("submit action");
     console.log(email, password);
     //api call
+
 
     let body = {
       email: email,
@@ -40,6 +40,8 @@ const LoginContainer = () => {
     const result = await JSON.parse(resWithoutStreaming);
     console.log(result);
   };
+
+
 
   return (
     <div>
