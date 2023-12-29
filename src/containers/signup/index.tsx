@@ -22,6 +22,9 @@ const SignupContainer = () => {
     console.log("submit action");
     console.log(name, email, password);
     //api call
+    if(name !=="" ){
+
+    }
 
     let body = {
       name: name,
