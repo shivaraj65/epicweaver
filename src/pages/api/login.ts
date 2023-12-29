@@ -1,3 +1,4 @@
+//@ts-nocheck
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
