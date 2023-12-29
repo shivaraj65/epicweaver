@@ -7,9 +7,6 @@ import { Button, Row, Col, Card } from "antd";
 
 const { Meta } = Card;
 
-// images import
-import Image1 from "@/assets/images/tyler-nix-q-motCAvPBM-unsplash.jpg";
-
 const Landing = () => {
   const router = useRouter();
   const [test, settest] = useState(null);
