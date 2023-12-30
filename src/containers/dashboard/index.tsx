@@ -24,10 +24,14 @@ import Workspace from "@/components/workspace";
 import Settings from "@/components/settings";
 
 const Dashboard = () => {
-  const [selectedMenu, setSelectedMenu] = useState(1);
+  const router = useRouter();
 
-  const [credentials, setCredentials] = userCreds(
-    useShallow((state) => [state.credentials, state.setCredentials])
+  const [credentials, selectedMenu, setSelectedMenu] = userCreds(
+    useShallow((state) => [
+      state.credentials,
+      state.selectedMenu,
+      state.setSelectedMenu,
+    ])
   );
 
   const menuItems: any = [
@@ -42,7 +46,6 @@ const Dashboard = () => {
       <Layout className={styles.dashContainer}>
         <Sider
           theme="light"
-          //   color="#DAFFFB"
           className={styles.sidebarContainer}
           breakpoint="xl"
           collapsedWidth="0"
@@ -68,7 +71,12 @@ const Dashboard = () => {
                           : styles.menuItem
                       }
                       onClick={() => {
-                        setSelectedMenu(index);
+                        if (index === 3) {
+                          setSelectedMenu(1);
+                          router.push("/dashboard");
+                        } else {
+                          setSelectedMenu(index);
+                        }
                       }}
                     >
                       {data?.icon}&nbsp;&nbsp;<p>{data?.name}</p>
@@ -88,9 +96,7 @@ const Dashboard = () => {
         <Layout>
           <div
             style={{
-              
               height: "100vh",
-             
             }}
           >
             {selectedMenu === 0 ? (
@@ -99,8 +105,6 @@ const Dashboard = () => {
               <Workspace />
             ) : selectedMenu === 2 ? (
               <Settings />
-            ) : selectedMenu === 3 ? (
-              <p>create</p>
             ) : null}
           </div>
         </Layout>
