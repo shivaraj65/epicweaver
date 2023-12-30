@@ -33,13 +33,13 @@ const Dashboard = () => {
           theme="light"
           //   color="#DAFFFB"
           className={styles.sidebarContainer}
-          breakpoint="xxl"
+          breakpoint="xl"
           collapsedWidth="0"
           onBreakpoint={(broken: any) => {
-            console.log(broken);
+            // console.log(broken);
           }}
           onCollapse={(collapsed: any, type: any) => {
-            console.log(collapsed, type);
+            // console.log(collapsed, type);
           }}
         >
           <div className={styles.spaceBtwn}>
@@ -49,9 +49,9 @@ const Dashboard = () => {
               </div>
               {menuItems.map((data: any, index: number) => {
                 return (
-                  <>
+                  <div key={index+1}>
                     <div
-                      key={index}
+                      
                       className={
                         selectedMenu === index
                           ? styles.menuItemSelected
@@ -64,7 +64,7 @@ const Dashboard = () => {
                       {data?.icon}&nbsp;&nbsp;<p>{data?.name}</p>
                     </div>
                     <Divider className={styles.divider} />
-                  </>
+                  </div>
                 );
               })}
             </div>
