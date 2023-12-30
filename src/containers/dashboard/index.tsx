@@ -26,11 +26,12 @@ import Settings from "@/components/settings";
 const Dashboard = () => {
   const router = useRouter();
 
-  const [credentials, selectedMenu, setSelectedMenu] = userCreds(
+  const [selectedMenu, setSelectedMenu, pageFlag, setPageFlag] = userCreds(
     useShallow((state) => [
-      state.credentials,
       state.selectedMenu,
       state.setSelectedMenu,
+      state.pageFlag,
+      state.setPageFlag,
     ])
   );
 
@@ -95,8 +96,10 @@ const Dashboard = () => {
                         onClick={() => {
                           if (index === 3) {
                             setSelectedMenu(1);
+                            setPageFlag(1);
                             router.push("/dashboard");
                           } else {
+                            setPageFlag(0);
                             setSelectedMenu(index);
                           }
                         }}
