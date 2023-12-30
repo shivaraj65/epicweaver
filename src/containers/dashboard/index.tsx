@@ -5,6 +5,9 @@ import { useRouter } from "next/router";
 
 import styles from "./dashboard.module.css";
 
+import userCreds from "@/store/userCreds";
+import { useShallow } from "zustand/react/shallow";
+
 import { Button, Row, Col, Input, message, Layout, Divider } from "antd";
 import {
   CompassOutlined,
@@ -16,8 +19,16 @@ import {
 
 const { Header, Content, Footer, Sider } = Layout;
 
+import Explore from "@/components/explore";
+import Workspace from "@/components/workspace";
+import Settings from "@/components/settings";
+
 const Dashboard = () => {
-  const [selectedMenu, setSelectedMenu] = useState(0);
+  const [selectedMenu, setSelectedMenu] = useState(1);
+
+  const [credentials, setCredentials] = userCreds(
+    useShallow((state) => [state.credentials, state.setCredentials])
+  );
 
   const menuItems: any = [
     { name: "Explore", icon: <CompassOutlined /> },
@@ -49,9 +60,8 @@ const Dashboard = () => {
               </div>
               {menuItems.map((data: any, index: number) => {
                 return (
-                  <div key={index+1}>
+                  <div key={index + 1}>
                     <div
-                      
                       className={
                         selectedMenu === index
                           ? styles.menuItemSelected
@@ -70,20 +80,28 @@ const Dashboard = () => {
             </div>
             <div className={styles.profile}>
               <UserOutlined />
-              &nbsp;&nbsp;user profile
+              &nbsp;&nbsp;&nbsp;
+              {credentials ? credentials.name + " uowegf  " : null}
             </div>
           </div>
         </Sider>
         <Layout>
           <div
             style={{
-              padding: 24,
-              minHeight: 360,
+              
               height: "100vh",
-              backgroundColor: "#efefef",
+             
             }}
           >
-            content
+            {selectedMenu === 0 ? (
+              <Explore />
+            ) : selectedMenu === 1 ? (
+              <Workspace />
+            ) : selectedMenu === 2 ? (
+              <Settings />
+            ) : selectedMenu === 3 ? (
+              <p>create</p>
+            ) : null}
           </div>
         </Layout>
       </Layout>
