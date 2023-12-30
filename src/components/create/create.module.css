@@ -1,0 +1,22 @@
+
+
+.breadcrumbItem{
+    font-size: 0.8rem;
+    /* color: #57c5b6; */
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+}
+
+.breadcrumbItem:hover{
+    cursor: pointer;
+}
+
+.createContainer{
+    margin: 15px 0;
+    background-color:#fefefe;
+    font-family: "Noto Sans", sans-serif;
+    padding: 14px;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px;
+    height:120vh;
+}

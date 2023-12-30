@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "./login.module.css";
 
-import userCreds from "@/store/userCreds";
-import { useShallow } from "zustand/react/shallow";
+// import userCreds from "@/store/userCreds";
+// import { useShallow } from "zustand/react/shallow";
 
 import { Button, Row, Col, Input, message } from "antd";
 import {
@@ -19,10 +19,6 @@ const LoginContainer = () => {
   const router = useRouter();
 
   const [messageApi, contextHolder] = message.useMessage();
-
-  const [credentials, setCredentials] = userCreds(
-    useShallow((state) => [state.credentials, state.setCredentials])
-  );
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,9 +44,11 @@ const LoginContainer = () => {
       const result = await JSON.parse(resWithoutStreaming);
       console.log(result);
       if (result.status === "success" && result.data.length > 0) {
-        setCredentials(result[0]);
+        localStorage.setItem('credId', result.data[0].id);
+        localStorage.setItem('credName', result.data[0].name);
+        localStorage.setItem('credEmail', result.data[0].email);
         router.push("/dashboard");
-      } else if (result.status === "failed" && result.data.length > 0) {
+      } else if (result.status === "failed" ) {
         messageApi.open({
           type: "error",
           content: "email / password is invalid. try again!",
