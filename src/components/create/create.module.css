@@ -1,5 +1,8 @@
 
-
+.createRootCont{
+    height:100%;
+    width:100%;
+}
 .breadcrumbItem{
     font-size: 0.8rem;
     /* color: #57c5b6; */

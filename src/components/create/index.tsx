@@ -8,6 +8,9 @@ import { HomeOutlined, UserOutlined } from "@ant-design/icons";
 import userCreds from "@/store/userCreds";
 import { useShallow } from "zustand/react/shallow";
 
+import PageOne from "./pageOne";
+import PageTwo from "./pageTwo";
+
 const Create = () => {
   const router = useRouter();
 
@@ -15,24 +18,43 @@ const Create = () => {
     useShallow((state) => [state.pageFlag, state.setPageFlag])
   );
 
+  const [createPage, setCreatePage] = useState(0);
+  const [storyTitle, setStoryTitle] = useState("");
+  const [selectedModel, setSelectedModel] = useState("PALM");
+  const [temperature, setTemperature] = useState("Creative");
+  
   return (
-    <div>
-      <Breadcrumb>
-        <Breadcrumb.Item
-          onClick={() => {
-            setPageFlag(0);
-          }}
-          className={styles.breadcrumbItem}
-        >
-          Workspace
-        </Breadcrumb.Item>
-        <Breadcrumb.Item className={styles.breadcrumbItem}>
-          Create Story
-        </Breadcrumb.Item>
-      </Breadcrumb>
-      <div className={styles.createContainer}>
-            content
-      </div>
+    <div className={styles.createRootCont}>
+      {createPage === 0 ? (
+        <>
+          <PageOne
+            setCreatePage={setCreatePage}
+            storyTitle={storyTitle}
+            setStoryTitle={setStoryTitle}
+            selectedModel={selectedModel}
+            setSelectedModel={setSelectedModel}
+            temperature={temperature}
+            setTemperature={setTemperature}
+          />
+        </>
+      ) : (
+        <>
+          <Breadcrumb>
+            <Breadcrumb.Item
+              onClick={() => {
+                setPageFlag(0);
+              }}
+              className={styles.breadcrumbItem}
+            >
+              Workspace
+            </Breadcrumb.Item>
+            <Breadcrumb.Item className={styles.breadcrumbItem}>
+              Create Story
+            </Breadcrumb.Item>
+          </Breadcrumb>
+          <div className={styles.createContainer}>content</div>
+        </>
+      )}
     </div>
   );
 };
