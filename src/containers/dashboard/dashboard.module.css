@@ -47,6 +47,24 @@
   cursor: pointer;
 }
 
+.createButton {
+  margin: 10px 8px;
+  padding: 4px 16px;
+  border-radius: 16px;
+  display: flex;
+  /* align-items:flex-start; */
+  justify-content: flex-start;
+  background-color: #57c5b6;
+  color: #fefefe;
+  font-size: 1.3rem;
+  font-family: "Satisfy", cursive;
+  font-weight: 500;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px;
+}
+.createButton:hover {
+  cursor: pointer;
+}
+
 .menuItemSelected {
   margin: 5px 8px;
   background-color: #5fc7c04f;
