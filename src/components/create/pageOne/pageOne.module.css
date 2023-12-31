@@ -1,5 +1,17 @@
+
+.breadcrumbItem{
+  font-size: 0.8rem;
+  /* color: #57c5b6; */
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 400;
+}
+
+.breadcrumbItem:hover{
+  cursor: pointer;
+}
+
 .container {
-  height: 100%;
+  height: 96%;
   padding: 18px;
   background-color: #fefefe;
   border-radius: 6px;

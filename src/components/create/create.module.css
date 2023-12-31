@@ -3,16 +3,6 @@
     height:100%;
     width:100%;
 }
-.breadcrumbItem{
-    font-size: 0.8rem;
-    /* color: #57c5b6; */
-    font-family: "Noto Sans", sans-serif;
-    font-weight: 400;
-}
-
-.breadcrumbItem:hover{
-    cursor: pointer;
-}
 
 .createContainer{
     margin: 15px 0;

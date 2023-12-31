@@ -40,4 +40,5 @@ model Context {
   createdAt DateTime
   userId   String
   publishedStatus String?
+  prompt String
 }
