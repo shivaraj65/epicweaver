@@ -14,6 +14,30 @@ model User {
   id    String   @id @map("_id") 
   email String  @unique
   name  String?
-  password String?
+  password String
+  story3ApiKey String?
+  palmApiKey String?
+  gpt35Key String?
+  gpt4Key String?
+  createdAt DateTime 
 }
 
+model Story {
+  id    String   @id @map("_id") 
+  title String 
+  model String
+  temperature String
+  userId  String
+  createdAt DateTime
+  publishedStatus String
+}
+
+model Context {
+  id    String   @id @map("_id")
+  context String
+  minifiedContext String
+  previousNodeId String
+  createdAt DateTime
+  userId   String
+  publishedStatus String
+}
