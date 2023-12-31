@@ -22,12 +22,13 @@ const Create = () => {
   const [storyTitle, setStoryTitle] = useState("");
   const [selectedModel, setSelectedModel] = useState("PALM");
   const [temperature, setTemperature] = useState("Creative");
-  
+
   return (
     <div className={styles.createRootCont}>
       {createPage === 0 ? (
         <>
           <PageOne
+            setPageFlag={setPageFlag}
             setCreatePage={setCreatePage}
             storyTitle={storyTitle}
             setStoryTitle={setStoryTitle}
@@ -39,20 +40,7 @@ const Create = () => {
         </>
       ) : (
         <>
-          <Breadcrumb>
-            <Breadcrumb.Item
-              onClick={() => {
-                setPageFlag(0);
-              }}
-              className={styles.breadcrumbItem}
-            >
-              Workspace
-            </Breadcrumb.Item>
-            <Breadcrumb.Item className={styles.breadcrumbItem}>
-              Create Story
-            </Breadcrumb.Item>
-          </Breadcrumb>
-          <div className={styles.createContainer}>content</div>
+          <PageTwo setPageFlag={setPageFlag} />
         </>
       )}
     </div>

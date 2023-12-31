@@ -1,0 +1,39 @@
+
+.breadcrumbItem{
+    font-size: 0.8rem;
+    /* color: #57c5b6; */
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+}
+
+.breadcrumbItem:hover{
+    cursor: pointer;
+}
+
+.container {
+    position: relative;
+    height: 96%;
+    overflow-y: auto;
+    padding: 18px;
+    background-color: #fefefe;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px;
+  }
+
+
+
+
+
+
+  .floater{
+    position: absolute;
+    bottom:10px;
+    width: 100%;
+    margin: 0;
+    left:0;
+    padding: 0 18px;
+  }
+
+  .inputFloater:focus{
+    border: 1px solid #57c5b6 !important;
+  }
