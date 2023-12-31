@@ -1,5 +1,5 @@
 // This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// learn more about it in the docs: https://pris.ly/d/prisma-schema 
 
 generator client {
   provider = "prisma-client-js"
@@ -13,7 +13,7 @@ datasource db {
 model User {
   id    String   @id @map("_id") 
   email String  @unique
-  name  String?
+  name  String
   password String
   story3ApiKey String?
   palmApiKey String?
@@ -39,5 +39,5 @@ model Context {
   previousNodeId String
   createdAt DateTime
   userId   String
-  publishedStatus String
+  publishedStatus String?
 }

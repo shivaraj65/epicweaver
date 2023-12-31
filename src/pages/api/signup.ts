@@ -2,11 +2,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
-import { sha512 } from 'js-sha512';
+import { sha512 } from "js-sha512";
 
 type Data = {
   data: any;
-  status:any;
+  status: any;
 };
 
 const prisma = new PrismaClient();
@@ -26,9 +26,9 @@ export default async function handler(
         name: "desc",
       },
     });
-    if(test.length>0){
+    if (test.length > 0) {
       prisma.$disconnect();
-      res.status(200).json({ data: null,status:"userExist" });
+      res.status(200).json({ data: null, status: "userExist" });
     }
     let res1 = await prisma.user.create({
       data: {
@@ -36,13 +36,17 @@ export default async function handler(
         name: req.body?.name,
         email: req.body?.email,
         password: sha512(req.body?.password),
+        story3ApiKey: null,
+        palmApiKey: null,
+        gpt35Key: null,
+        gpt4Key: null,
+        createdAt: new Date().toISOString(),
       },
     });
     prisma.$disconnect();
     // console.log(res1);
-    res.status(200).json({ data: res1,status:"success" });
+    res.status(200).json({ data: res1, status: "success" });
   } catch (err) {
     console.log(err);
   }
-
 }

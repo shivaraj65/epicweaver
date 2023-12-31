@@ -47,6 +47,10 @@ const LoginContainer = () => {
         localStorage.setItem('credId', result.data[0].id);
         localStorage.setItem('credName', result.data[0].name);
         localStorage.setItem('credEmail', result.data[0].email);
+        localStorage.setItem('story3ApiKey', result.data[0].story3ApiKey);
+        localStorage.setItem('palmApiKey', result.data[0].palmApiKey);
+        localStorage.setItem('gpt35Key', result.data[0].gpt35Key);
+        localStorage.setItem('gpt4Key', result.data[0].gpt4Key);
         router.push("/dashboard");
       } else if (result.status === "failed" ) {
         messageApi.open({
