@@ -1,0 +1,111 @@
+.container {
+  height: 100%;
+  padding: 18px;
+  background-color: #fefefe;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+}
+
+.nonSelectorContainer {
+  height: 80%;
+  width: 95%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* align-items: center; */
+  border-radius: 6px;
+}
+.nonSelectorTitle {
+  font-size: 1.9rem;
+  color: #57c5b6;
+  font-family: "Satisfy", cursive;
+}
+.nextButton {
+  margin-top: 15px;
+  width: 50%;
+  color: #57c5b6;
+  font-size: 0.9rem;
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 400;
+}
+.nextButton:hover {
+  color: #57c5b6 !important;
+  border: 1px solid #57c5b6 !important;
+}
+
+.inputField {
+  border: none;
+  border-bottom: 2px solid #79797952;
+  outline: none;
+  padding: 8px;
+  transition: border-bottom-color 0.3s ease;
+  width: 100%;
+  font-size: 0.9rem;
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 400;
+  margin-top: 10px;
+}
+
+.innerContainer {
+  height: 80%;
+  width: 100%;
+  /* display: flex;
+    justify-content: center;
+    align-items: center; */
+}
+
+.rowStyle {
+  height: 100%;
+}
+.colStyle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.selectorContainer {
+  height: 80%;
+  width: 95%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+  border: 1.5px solid #efefef;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 1px 1px;
+}
+
+.selectorInnerContainer {
+  width: 100%;
+}
+
+.selectorTitle {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #57c5b6;
+  font-family: "Satisfy", cursive;
+}
+
+.tabsContainer {
+  margin: 20px 0 30px 0;
+}
+
+.selectorText {
+  padding-left: 8px;
+  color: #a1a2a2;
+  font-size: 0.9rem;
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 600;
+}
+
+.warningtext {
+  padding-left: 8px;
+  color: #ff5252db;
+  font-size: 0.7rem;
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 400;
+}

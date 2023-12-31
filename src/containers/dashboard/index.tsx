@@ -91,7 +91,9 @@ const Dashboard = () => {
                         className={
                           selectedMenu === index
                             ? styles.menuItemSelected
-                            : styles.menuItem
+                            : data.name!=='Create story'?
+                            styles.menuItem:
+                            styles.createButton
                         }
                         onClick={() => {
                           if (index === 3) {
