@@ -62,7 +62,7 @@ const PageOne: React.FC<Props> = (props) => {
         <Row className={styles.rowStyle}>
           <Col span={12} className={styles.colStyle}>
             <div className={styles.nonSelectorContainer}>
-              <p className={styles.nonSelectorTitle}>What's your story</p>
+              <p className={styles.nonSelectorTitle}>What&apos;s your story</p>
               <input
                 type="text"
                 value={props.storyTitle}
