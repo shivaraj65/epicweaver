@@ -34,6 +34,7 @@ model Story {
 
 model Context {
   id    String   @id @map("_id")
+  storyId String
   context String
   minifiedContext String
   previousNodeId String
