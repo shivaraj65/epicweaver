@@ -38,44 +38,48 @@
   border: 1px solid #b4b4b46d;
   border-radius: 8px;
   margin: 8px 4px;
-  padding: 8px 0px;
+  padding: 8px 0px 25px;
   font-size: 0.9rem;
   font-family: "Noto Sans", sans-serif;
   font-weight: 400;
   display: flex;
+  position: relative;
 }
 
 .chatContainerLeftMargin{
   border: 1px solid #b4b4b46d;
   border-radius: 8px;
   margin: 8px 4px;
-  padding: 8px 0px 8px 28px;
+  padding: 8px 0px 25px 28px;
   font-size: 0.9rem;
   font-family: "Noto Sans", sans-serif;
   font-weight: 400;
   display: flex;
+  position: relative;
 }
 
 .chatContainerRightMargin{
   border: 1px solid #b4b4b46d;
   border-radius: 8px;
   margin: 8px 4px;
-  padding: 8px 28px 8px 0px;
+  padding: 8px 28px 25px 0px;
   font-size: 0.9rem;
   font-family: "Noto Sans", sans-serif;
   font-weight: 400;
   display: flex;
+  position: relative;
 }
 
 .chatContainerLRMargin{
   border: 1px solid #b4b4b46d;
   border-radius: 8px;
   margin: 8px 4px;
-  padding: 8px 28px;
+  padding: 8px 28px 25px;
   font-size: 0.9rem;
   font-family: "Noto Sans", sans-serif;
   font-weight: 400;
   display: flex;
+  position: relative;
 }
 
 .controls{
@@ -83,9 +87,17 @@
  color:#b4b4b4;
  font-size: 14px;
 }
+
 .controls:hover{
   cursor: pointer;
   color:#313131;
+}
+
+.floaterContollerDiv{
+  position:absolute;
+  float: right;
+  right: 8px;
+  bottom:4px;
 }
 
 .promptDiv {
@@ -147,6 +159,26 @@
   text-justify: inter-word;
   line-height: 1.8rem;
 }
+
+.controlIcons{
+  padding:4px 4px;
+  margin-left: 4px;
+  color: #6f6f6f;
+}
+.controlIcons:hover{
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px;
+}
+.controlIconsdelete{
+  padding:4px 4px;
+  margin-left: 4px;
+  color: #d75151;
+}
+.controlIconsdelete:hover{
+  cursor: pointer;
+  box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px;
+}
+
 
 
 
