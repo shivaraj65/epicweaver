@@ -105,7 +105,7 @@ const PageOne: React.FC<Props> = (props) => {
                 <div className={styles.selectorInnerContainer}>
                   <p className={styles.selectorTitle}>Customize your model</p>
                   <div className={styles.tabsContainer}>
-                    <p className={styles.selectorText}>Select A model</p>
+                    <p className={styles.selectorText}>select a Model</p>
                     <Tabs
                       theme={"light"}
                       items={Models}
@@ -117,7 +117,7 @@ const PageOne: React.FC<Props> = (props) => {
                     </span>
                   </div>
                   <div className={styles.tabsContainer}>
-                    <p className={styles.selectorText}>Select A Temperature</p>
+                    <p className={styles.selectorText}>select a Temperature</p>
                     <Tabs
                       theme={"light"}
                       items={Temperature}
