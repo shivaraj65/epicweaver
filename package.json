@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@google-ai/generativelanguage": "^0.2.1",
     "@prisma/client": "^5.7.1",
     "antd": "^5.12.5",
     "axios": "^1.6.3",
+    "google-auth-library": "^8.9.0",
     "js-sha512": "^0.8.0",
     "langchain": "^0.0.212",
     "next": "14.0.4",
