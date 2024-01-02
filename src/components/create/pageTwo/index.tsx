@@ -8,6 +8,9 @@ import {
   UserOutlined,
   LeftOutlined,
   RightOutlined,
+  RedoOutlined,
+  FormOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 
 import PALM from "@/assets/icons/PALM.svg";
@@ -347,6 +350,16 @@ const PageTwo: React.FC<Props> = (props) => {
                       }}
                     />
                   ) : null}
+                  <div className={styles.floaterContollerDiv}>
+                    {goldLayer[goldLayer.length - 1].id === data.id ? (
+                      <>
+                        <RedoOutlined className={styles.controlIcons} />
+                        <FormOutlined className={styles.controlIcons} />
+                      </>
+                    ) : null}
+
+                    <DeleteOutlined className={styles.controlIconsdelete} />
+                  </div>
                 </div>
               );
             })}
