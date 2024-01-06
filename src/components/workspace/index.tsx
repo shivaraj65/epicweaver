@@ -15,14 +15,47 @@ import { useShallow } from "zustand/react/shallow";
 
 import Create from "@/components/create";
 
-const Dummy: any = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+// const Dummy: any = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 const Workspace = () => {
   const router = useRouter();
 
-  const [pageFlag, setPageFlag] = userCreds(
-    useShallow((state) => [state.pageFlag, state.setPageFlag])
+  const [pageFlag, setPageFlag, setStoryData] = userCreds(
+    useShallow((state) => [state.pageFlag, state.setPageFlag, state.setStoryData])
   );
+
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    if(pageFlag === 0){
+      setStoryData(null)
+    }
+    if (localStorage.getItem("credId")) {
+      (async () => {
+        const requestOptions: RequestInit = {
+          method: "POST",
+          headers: {
+            "Content-Type": " application/json; charset=utf-8",
+          },
+          body: JSON.stringify({ userId: localStorage.getItem("credId") }),
+        };
+        const response = await fetch(
+          "/api/getAllStoriesByUser",
+          requestOptions
+        );
+        const resWithoutStreaming = await new Response(response.body).text();
+        const result = await JSON.parse(resWithoutStreaming);
+        // console.log(result);
+        if(result.status === "success"){
+          setData(result.data)
+        }else{
+          alert('error message')
+        }
+      })();
+    } else {
+      router.push("/");
+    }
+  }, [pageFlag]);
 
   return (
     <div className={styles.workspaceContainer}>
@@ -33,7 +66,7 @@ const Workspace = () => {
             <div
               className={styles.createButton}
               onClick={() => {
-                setPageFlag(1)
+                setPageFlag(1);
               }}
             >
               &nbsp; Create Story &nbsp; <ThunderboltOutlined />
@@ -43,10 +76,13 @@ const Workspace = () => {
             <p className={styles.sectionTitle}>Your recent works</p>
 
             <Row>
-              {Dummy.map((data: any, index: number) => {
+              {data && data?.map((datai: any, index: number) => {
                 return (
                   <Col span={6} className={styles.colStyle} key={index}>
-                    <div className={styles.storyCard}>
+                    <div className={styles.storyCard} onClick={()=>{
+                      setStoryData(datai)
+                      setPageFlag(1)                     
+                    }}>
                       <Row className={styles.storyCardRow}>
                         <Col span={6}>
                           <div className={styles.storyCardImageDiv}>
@@ -62,17 +98,16 @@ const Workspace = () => {
                           <div className={styles.StoryContentDiv}>
                             <div>
                               <p className={styles.storyTitle}>
-                                Some random title
-                                1010101001101kjsdfiowieifhwehfowhefh
+                                {datai.title}
                               </p>
                             </div>
                             <div className={styles.storyActionItems}>
                               <EditOutlined
                                 className={styles.storyContorlIcon}
                               />
-                              <ReadOutlined
+                              {/* <ReadOutlined
                                 className={styles.storyContorlIcon}
-                              />
+                              /> */}
                               <EllipsisOutlined
                                 className={styles.storyContorlIcon}
                               />

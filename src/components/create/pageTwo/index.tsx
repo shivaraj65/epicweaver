@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import styles from "./pageTwo.module.css";
 import Image from "next/image";
 
-import { Breadcrumb, Input } from "antd";
+import { Breadcrumb, Input, Skeleton } from "antd";
 import {
   SendOutlined,
   UserOutlined,
@@ -12,6 +12,9 @@ import {
   FormOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+
+import userCreds from "@/store/userCreds";
+import { useShallow } from "zustand/react/shallow";
 
 import PALM from "@/assets/icons/PALM.svg";
 import GPT from "@/assets/icons/GPT.svg";
@@ -154,25 +157,51 @@ const PageTwo: React.FC<Props> = (props) => {
 
   const [goldLayer, setGoldlayer] = useState<any>(null);
 
+  const [storyData] = userCreds(useShallow((state) => [state.storyData]));
+
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    //initial page load data fetch...
-    //storing the raw data to bronzeLayer...
-    setBronzeLayer(rawData);
+    (async () => {
+      setLoading(true)
+      // console.log(storyData, "from page 2");
+      if (storyData) {
+        let body = {
+          storyId: storyData.id,
+        };
+        const requestOptions: RequestInit = {
+          method: "POST",
+          headers: {
+            "Content-Type": " application/json; charset=utf-8",
+          },
+          body: JSON.stringify(body),
+        };
+        const response = await fetch("/api/getAllStoryContext", requestOptions);
+        const resWithoutStreaming = await new Response(response.body).text();
+        const result = await JSON.parse(resWithoutStreaming);
+        //storing the raw data to bronzeLayer...
+        setBronzeLayer(result.data);
+        // console.log("bronze data", result.data);
+      }
+    })();
   }, []);
 
   useEffect(() => {
     (() => {
+      setLoading(true)
       if (bronzeLayer) {
+        console.log("silver layer refinement started");
         let refinedObject: any = {};
         let traverseList: any = [];
         //finding root...
         for (let i = 0; i < bronzeLayer.length; i++) {
-          if (bronzeLayer[i].previousNodeId === null) {
+          if (bronzeLayer[i].previousNodeId === "null") {
             refinedObject["root"] = [bronzeLayer[i]];
             traverseList.push(bronzeLayer[i]);
             break;
           }
         }
+        console.log("found root", traverseList);
         //process bronze layer to silver layer...
         for (let i = 0; i < traverseList.length; i++) {
           let tempArr: any = [];
@@ -190,6 +219,7 @@ const PageTwo: React.FC<Props> = (props) => {
             refinedObject[traverseList[i].id] = tempArr;
           }
         }
+        console.log("silver layer data", refinedObject);
         setSilverLayer(refinedObject);
         //initial goldLayer Load...
         if (!goldLayer) {
@@ -199,23 +229,23 @@ const PageTwo: React.FC<Props> = (props) => {
             refinedArray.push(ticker[0]);
             ticker = refinedObject[ticker[0].id];
           }
+          console.log("gold layer data", refinedArray);
           setGoldlayer(refinedArray);
         }
       }
+      setLoading(false)
     })();
   }, [bronzeLayer]);
-
-  const promptSubmit = () => {
-    console.log("prompt submit", input);
-  };
 
   const controllsCheckerLeft = (data: any) => {
     if (data.previousNodeId !== null) {
       let list = silverLayer[data.previousNodeId];
-      if (list.length <= 1 || data.id === list[0].id) {
-        return false;
-      } else {
-        return true;
+      if (list) {
+        if (list.length <= 1 || data.id === list[0].id) {
+          return false;
+        } else {
+          return true;
+        }
       }
     } else {
       return false;
@@ -225,10 +255,12 @@ const PageTwo: React.FC<Props> = (props) => {
   const controllsCheckerRight = (data: any) => {
     if (data.previousNodeId !== null) {
       let list = silverLayer[data.previousNodeId];
-      if (list.length <= 1 || data.id === list[list.length - 1].id) {
-        return false;
-      } else {
-        return true;
+      if (list) {
+        if (list.length <= 1 || data.id === list[list.length - 1].id) {
+          return false;
+        } else {
+          return true;
+        }
       }
     } else {
       return false;
@@ -273,6 +305,124 @@ const PageTwo: React.FC<Props> = (props) => {
     }
   };
 
+  const promptSubmit = async () => {
+    setLoading(true)
+    // console.log("prompt submit", input);
+    //call the api 101
+    if (goldLayer && goldLayer.length === 0) {
+      //first prompt
+      let body = {
+        model: storyData.model,
+        temperature: Number(storyData.temperature),
+        userid: localStorage.getItem("credId"),
+        prompt: input,
+        templateStyle: "startNew",
+      };
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": " application/json; charset=utf-8",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch("/api/storyGenerator", requestOptions);
+      const resWithoutStreaming = await new Response(response.body).text();
+      const result = await JSON.parse(resWithoutStreaming);
+      // console.log(result, "new");
+      //store to DB
+      const res = {
+        storyId: storyData.id,
+        context: result.story,
+        title: result.title ? result.title : "null",
+        previousNodeId: "null",
+        userId: localStorage.getItem("credId"),
+        publishedStatus: "false",
+        prompt: input,
+      };
+      await createNode(res);
+      //push it to bronzeLayer
+      let temp = [...bronzeLayer, res];
+      // console.log("new bronzelayer", temp);
+      setBronzeLayer(temp);
+      //push to gold layer
+      let tempG = [...goldLayer, res];
+      setGoldlayer(tempG);
+    } else if (goldLayer && goldLayer.length >= 1) {
+      //continue prompt
+      // console.log("continue block triggered");
+      let previousStory = "";
+      for (let i = 0; i < goldLayer.length; i++) {
+        previousStory = previousStory + goldLayer[i].context + " ";
+      }
+      // console.log("previous story", previousStory);
+      let body = {
+        model: storyData.model,
+        temperature: Number(storyData.temperature),
+        userid: localStorage.getItem("credId"),
+        prompt: input,
+        templateStyle: "continueExisting",
+        previousStory: previousStory,
+      };
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": " application/json; charset=utf-8",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch("/api/storyGenerator", requestOptions);
+      const resWithoutStreaming = await new Response(response.body).text();
+      const result = await JSON.parse(resWithoutStreaming);
+      // console.log(result, "continue");
+      //store to DB
+      const res = {
+        storyId: storyData.id,
+        context: result.story,
+        title: result.title,
+        minifiedContext: result.title,
+        previousNodeId: goldLayer[goldLayer.length - 1].id,
+        userId: localStorage.getItem("credId"),
+        publishedStatus: "false",
+        prompt: input,
+      };
+      await createNode(res);
+      //push it to bronzeLayer
+      let temp = [...bronzeLayer, res];
+      setBronzeLayer(temp);
+      //push to gold layer
+      let tempG = [...goldLayer, res];
+      setGoldlayer(tempG);
+    }
+    setLoading(false)
+    //101
+    //clear input + loaders
+    setInput("");
+  };
+
+  const createNode = async (data: any) => {
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(data),
+    };
+    const response = await fetch("/api/createNode", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    // console.log(resWithoutStreaming);
+    if (result.status !== "success") {
+      //101 api DB problem
+    }
+    console.log("node save", result);
+  };
+
+  const regenerate = async () => {};
+
+  const rephrase = async () => {};
+
+  const deleteNode = async () => {};
+
   return (
     <>
       <Breadcrumb style={{ marginBottom: "6px" }}>
@@ -290,12 +440,14 @@ const PageTwo: React.FC<Props> = (props) => {
       </Breadcrumb>
       <div className={styles.container}>
         <div className={styles.scroller}>
-          <p className={styles.storyTitle}>Story Title</p>
+          <p className={styles.storyTitle}>
+            {storyData ? storyData.title : ""}
+          </p>
           {goldLayer &&
             goldLayer.map((data: any, index: number) => {
               return (
                 <div
-                  key={index}
+                  key={data.id}
                   className={
                     !controllsCheckerLeft(data) && !controllsCheckerRight(data)
                       ? styles.chatContainerLRMargin
@@ -315,7 +467,7 @@ const PageTwo: React.FC<Props> = (props) => {
                     />
                   ) : null}
 
-                  <div>
+                  <div style={{ width: "100%" }}>
                     <div className={styles.promptDiv}>
                       <p className={styles.promptText}>{data.prompt}</p>
                       <UserOutlined className={styles.userIcon} />
@@ -329,7 +481,7 @@ const PageTwo: React.FC<Props> = (props) => {
                         alt={"icon"}
                       ></Image>
                       <div className={styles.contextInnerDiv}>
-                        {data.previousNodeId !== null ? (
+                        {data.previousNodeId !== "null" ? (
                           <p className={styles.title}>
                             <span className={styles.titleTitle}>
                               Title : &nbsp;
@@ -363,6 +515,11 @@ const PageTwo: React.FC<Props> = (props) => {
                 </div>
               );
             })}
+          {loading ? (
+            <div className={styles.chatContainer} style={{padding:"16px"}}>
+              <Skeleton loading={loading} active  avatar paragraph={{ rows: 4 }} />
+            </div>
+          ) : null}
         </div>
 
         <div className={styles.floater}>
