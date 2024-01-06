@@ -4,6 +4,9 @@ import styles from "./pageOne.module.css";
 import { Row, Col, Button, message, Breadcrumb } from "antd";
 import { CaretRightOutlined } from "@ant-design/icons";
 
+import userCreds from "@/store/userCreds";
+import { useShallow } from "zustand/react/shallow";
+
 import PALM from "@/assets/icons/PALM.svg";
 import GPT from "@/assets/icons/GPT.svg";
 import Creative from "@/assets/icons/wand.svg";
@@ -38,10 +41,47 @@ interface Props {
 const PageOne: React.FC<Props> = (props) => {
   const [messageApi, contextHolder] = message.useMessage();
 
-  const validate = () => {
+  const [storyData, setStoryData] = userCreds(
+    useShallow((state) => [state.storyData, state.setStoryData])
+  );
+
+  const validate = async () => {
     if (props.storyTitle !== "") {
       if (props.selectedModel === "PALM") {
-        props.setCreatePage(1);
+        //api
+        let body = {
+          title: props.storyTitle,
+          model: props.selectedModel,
+          temperature:
+            props.temperature === "Creative"
+              ? "1"
+              : props.temperature === "Balanced"
+              ? "0.5"
+              : props.temperature === "Precise"
+              ? "0.1"
+              : "1",
+          userId: localStorage.getItem("credId"),
+          publishedStatus: "false",
+        };
+        const requestOptions: RequestInit = {
+          method: "POST",
+          headers: {
+            "Content-Type": " application/json; charset=utf-8",
+          },
+          body: JSON.stringify(body),
+        };
+        const response = await fetch("/api/createStory", requestOptions);
+        const resWithoutStreaming = await new Response(response.body).text();
+        const result = await JSON.parse(resWithoutStreaming);
+        if (result.status === "success") {
+          setStoryData(result.data);
+          props.setCreatePage(1);
+        } else {
+          messageApi.open({
+            type: "warning",
+            content: "Api Error! refersh the page again.",
+          });
+        }
       } else {
         messageApi.open({
           type: "warning",
@@ -58,7 +98,7 @@ const PageOne: React.FC<Props> = (props) => {
 
   return (
     <>
-      <Breadcrumb style={{marginBottom:"6px"}}>
+      <Breadcrumb style={{ marginBottom: "6px" }}>
         <Breadcrumb.Item
           onClick={() => {
             props.setPageFlag(0);

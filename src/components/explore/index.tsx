@@ -2,6 +2,7 @@ import { useState } from "react";
 import styles from "./explore.module.css";
 
 const Explore = () => {
+  //done
   const submitGen1 = async () => {
     const prompt = "write a story about a school boy who was a genius in maths";
     const previousStory =
@@ -28,6 +29,7 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
+  //done
   const submitGen2 = async () => {
     const prompt = "continue the story";
     const previousStory =
@@ -67,6 +69,7 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
+  //done
   const getStoriesByUserId = async () => {
     const requestOptions: RequestInit = {
       method: "POST",
@@ -81,6 +84,7 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
+  //done
   const getStoryContext = async () => {
     let body = {
       storyId: "190jie293STORY_ID",
@@ -98,7 +102,10 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
-  //create
+
+  //create-------
+
+  //done
   const createStory = async () => {
     let body = {
       title: "test title 02",
@@ -120,6 +127,7 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
+  //done
   const createNode = async () => {
     let body = {
       storyId: "8c469eee-163f-470d-befa-61fef3eae15d",
@@ -143,6 +151,8 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
+
+  
   const updateStory = async () => {
     let body = {
       id: "b7a88beb-2021-4f89-9d21-1d3e6cb60ad3",

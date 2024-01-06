@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./create.module.css";
 import { useRouter } from "next/router";
 
@@ -14,8 +14,8 @@ import PageTwo from "./pageTwo";
 const Create = () => {
   const router = useRouter();
 
-  const [pageFlag, setPageFlag] = userCreds(
-    useShallow((state) => [state.pageFlag, state.setPageFlag])
+  const [pageFlag, setPageFlag, storyData] = userCreds(
+    useShallow((state) => [state.pageFlag, state.setPageFlag, state.storyData])
   );
 
   const [createPage, setCreatePage] = useState(0);
@@ -23,6 +23,12 @@ const Create = () => {
   const [selectedModel, setSelectedModel] = useState("PALM");
   const [temperature, setTemperature] = useState("Creative");
 
+  useEffect(() => {
+      if(storyData?.id){
+        setCreatePage(1)
+      }
+  }, [])
+  
   return (
     <div className={styles.createRootCont}>
       {createPage === 0 ? (
