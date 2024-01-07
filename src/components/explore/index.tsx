@@ -344,7 +344,7 @@ const Explore = () => {
         delete story
       </button>
       <hr style={{ margin: "5px 30%", border: "none" }} />
-      <button onClick={() => {}}>delete story node</button> --complex logic should be acheived with the UI
+      <button onClick={() => {}}>delete story node</button> --complex logic should be acheived with the UI --implemented
 
       <p>---- story-3 api  ----</p>
       <button>create new story /api/v2/stories</button>

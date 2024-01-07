@@ -129,6 +129,10 @@
   margin: 20px 10% 4px 4px;
 }
 
+.contextInnerDiv{
+  width:100%;
+}
+
 .title {
   margin-left: 10px;
   margin-bottom: 10px;
@@ -158,6 +162,11 @@
   text-align: justify;
   text-justify: inter-word;
   line-height: 1.8rem;
+}
+
+.StoryEditDivController{
+  margin-left: 10px;
+  margin-top: 10px;
 }
 
 .controlIcons{

@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import styles from "./pageTwo.module.css";
 import Image from "next/image";
 
-import { Breadcrumb, Input, Skeleton } from "antd";
+import {
+  Breadcrumb,
+  Input,
+  Skeleton,
+  Popover,
+  Modal,
+  Progress,
+  Flex,
+  Button,
+} from "antd";
 import {
   SendOutlined,
   UserOutlined,
@@ -11,6 +20,9 @@ import {
   RedoOutlined,
   FormOutlined,
   DeleteOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  CheckOutlined,
 } from "@ant-design/icons";
 
 import userCreds from "@/store/userCreds";
@@ -22,6 +34,8 @@ import GPT from "@/assets/icons/GPT.svg";
 interface Props {
   setPageFlag: Function;
 }
+
+const { TextArea } = Input;
 
 //sample dummy data
 //initial raw data.
@@ -159,11 +173,21 @@ const PageTwo: React.FC<Props> = (props) => {
 
   const [storyData] = userCreds(useShallow((state) => [state.storyData]));
 
+  const [triggerIndex, setTriggerIndex] = useState<any>(-1);
+
+  const [deleteProgress, setDeleteProgress] = useState<any>([0, 0]);
+
   const [loading, setLoading] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [editingMode, setEditingMode] = useState([-1, -1]);
+
+  const [editData, setEditData] = useState<any>(null);
 
   useEffect(() => {
     (async () => {
-      setLoading(true)
+      setLoading(true);
       // console.log(storyData, "from page 2");
       if (storyData) {
         let body = {
@@ -188,7 +212,7 @@ const PageTwo: React.FC<Props> = (props) => {
 
   useEffect(() => {
     (() => {
-      setLoading(true)
+      setLoading(true);
       if (bronzeLayer) {
         console.log("silver layer refinement started");
         let refinedObject: any = {};
@@ -233,7 +257,7 @@ const PageTwo: React.FC<Props> = (props) => {
           setGoldlayer(refinedArray);
         }
       }
-      setLoading(false)
+      setLoading(false);
     })();
   }, [bronzeLayer]);
 
@@ -306,7 +330,7 @@ const PageTwo: React.FC<Props> = (props) => {
   };
 
   const promptSubmit = async () => {
-    setLoading(true)
+    setLoading(true);
     // console.log("prompt submit", input);
     //call the api 101
     if (goldLayer && goldLayer.length === 0) {
@@ -386,14 +410,8 @@ const PageTwo: React.FC<Props> = (props) => {
         prompt: input,
       };
       await createNode(res);
-      //push it to bronzeLayer
-      let temp = [...bronzeLayer, res];
-      setBronzeLayer(temp);
-      //push to gold layer
-      let tempG = [...goldLayer, res];
-      setGoldlayer(tempG);
     }
-    setLoading(false)
+    setLoading(false);
     //101
     //clear input + loaders
     setInput("");
@@ -413,15 +431,79 @@ const PageTwo: React.FC<Props> = (props) => {
     // console.log(resWithoutStreaming);
     if (result.status !== "success") {
       //101 api DB problem
+    } else {
+      //push it to bronzeLayer
+      let temp = [...bronzeLayer, result.data];
+      setBronzeLayer(temp);
+      //push to gold layer
+      let tempG = [...goldLayer, result.data];
+      console.log(tempG, "new gold layer data");
+      setGoldlayer(tempG);
     }
     console.log("node save", result);
   };
 
-  const regenerate = async () => {};
+  const regenerate = async (index: any) => {};
 
-  const rephrase = async () => {};
+  const rephrase = async (index: any) => {};
 
-  const deleteNode = async () => {};
+  const addNode = async (index: any) => {};
+
+  const deleteNode = async (index: any) => {
+    setDeleteProgress([0, goldLayer.length - index]);
+    let tracker = 0;
+    for (let i = index; i < goldLayer.length; i++) {
+      let body = {
+        id: goldLayer[i].id,
+      };
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": " application/json; charset=utf-8",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch("/api/deleteNode", requestOptions);
+      const resWithoutStreaming = await new Response(response.body).text();
+      const result = await JSON.parse(resWithoutStreaming);
+      if (result.status === "success") {
+        tracker += 1;
+        setDeleteProgress([tracker, goldLayer.length - index]);
+      }
+    }
+    //delete sequence completed...
+    setDeleteProgress([0, 0]);
+    setIsModalOpen(false);
+
+    //update bronze layer...
+    let filteredArray = bronzeLayer;
+    for (let node = index; node < goldLayer.length; node++) {
+      filteredArray = bronzeLayer.filter(
+        (obj: any) => obj.id !== goldLayer[node].id
+      );
+    }
+    setBronzeLayer(filteredArray);
+
+    //update gold layer...
+    let tempGold = goldLayer.slice(0, index);
+    setGoldlayer(tempGold);
+
+    //reset the trigger index
+    setTriggerIndex(-1);
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    deleteNode(triggerIndex);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setTriggerIndex(-1);
+  };
 
   return (
     <>
@@ -469,7 +551,41 @@ const PageTwo: React.FC<Props> = (props) => {
 
                   <div style={{ width: "100%" }}>
                     <div className={styles.promptDiv}>
-                      <p className={styles.promptText}>{data.prompt}</p>
+                      {editingMode[0] === index &&
+                      editingMode[1] === 0 &&
+                      editData ? (
+                        <>
+                          <Input
+                            value={editData?.prompt}
+                            onChange={(e) => {
+                              console.log("edit fucn-", e.target.value)
+                              let temp = editData;
+                              temp["prompt"] = e.target.value;
+                              console.log("edit fucn-", temp)
+                              setEditData(temp);
+                            }}
+                          />
+                          <Button
+                            style={{ margin: "0px 3px", padding: " 0 8px" }}
+                            onClick={() => {
+                              //call the regen api.. 101
+                            }}
+                          >
+                            <CheckOutlined />
+                          </Button>
+                          <Button
+                            style={{ margin: "0px 3px", padding: " 0 8px" }}
+                            onClick={() => {
+                              setEditingMode([-1, -1]);
+                              setEditData(null);
+                            }}
+                          >
+                            <CloseOutlined />
+                          </Button>
+                        </>
+                      ) : (
+                        <p className={styles.promptText}>{data.prompt}</p>
+                      )}
                       <UserOutlined className={styles.userIcon} />
                     </div>
 
@@ -482,15 +598,60 @@ const PageTwo: React.FC<Props> = (props) => {
                       ></Image>
                       <div className={styles.contextInnerDiv}>
                         {data.previousNodeId !== "null" ? (
-                          <p className={styles.title}>
-                            <span className={styles.titleTitle}>
-                              Title : &nbsp;
-                            </span>
-                            {data.minifiedContext}
-                          </p>
+                          editingMode[0] === index &&
+                          editingMode[1] === 1 &&
+                          editData ? (
+                            <Input
+                              className={styles.title}
+                              value={editData?.minifiedContext}
+                              onChange={(e) => {
+                                let temp = editData;
+                                temp["minifiedContext"] = e.target.value;
+                                setEditData(temp);
+                              }}
+                            />
+                          ) : (
+                            <p className={styles.title}>
+                              <span className={styles.titleTitle}>
+                                Title : &nbsp;
+                              </span>
+                              {data.minifiedContext}
+                            </p>
+                          )
                         ) : null}
-
-                        <p className={styles.storyBlock}>{data.context}</p>
+                        {editingMode[0] === index &&
+                        editingMode[1] === 1 &&
+                        editData ? (
+                          <>
+                            <TextArea
+                              className={styles.storyBlock}
+                              rows={4}
+                              value={data.context}
+                            />
+                            <br />
+                            <div className={styles.StoryEditDivController}>
+                              <Button
+                                style={{ margin: "0px 3px", padding: " 0 8px" }}
+                                onClick={() => {
+                                  //call the regen api.. 101
+                                }}
+                              >
+                                <CheckOutlined />
+                              </Button>
+                              <Button
+                                style={{ margin: "0px 3px", padding: " 0 8px" }}
+                                onClick={() => {
+                                  setEditingMode([-1, -1]);
+                                  setEditData(null);
+                                }}
+                              >
+                                <CloseOutlined />
+                              </Button>
+                            </div>
+                          </>
+                        ) : (
+                          <p className={styles.storyBlock}>{data.context}</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -505,19 +666,72 @@ const PageTwo: React.FC<Props> = (props) => {
                   <div className={styles.floaterContollerDiv}>
                     {goldLayer[goldLayer.length - 1].id === data.id ? (
                       <>
-                        <RedoOutlined className={styles.controlIcons} />
-                        <FormOutlined className={styles.controlIcons} />
+                        <RedoOutlined
+                          onClick={() => {
+                            regenerate(index);
+                          }}
+                          className={styles.controlIcons}
+                        />
+                        <Popover
+                          content={
+                            <div>
+                              <Flex gap="small" wrap="wrap">
+                                <Button
+                                  onClick={() => {
+                                    const temp = data
+                                    setEditData(temp);
+                                    setEditingMode([index, 0]);
+                                  }}
+                                >
+                                  Edit prompt
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    setEditingMode([index, 1]);
+                                  }}
+                                >
+                                  Edit Story
+                                </Button>
+                              </Flex>
+                            </div>
+                          }
+                          trigger="hover"
+                        >
+                          <FormOutlined
+                            onClick={() => {
+                              rephrase(index);
+                            }}
+                            className={styles.controlIcons}
+                          />
+                        </Popover>
                       </>
                     ) : null}
-
-                    <DeleteOutlined className={styles.controlIconsdelete} />
+                    <PlusOutlined
+                      onClick={() => {
+                        addNode(index);
+                      }}
+                      className={styles.controlIcons}
+                    />
+                    <DeleteOutlined
+                      onClick={() => {
+                        setTriggerIndex(index);
+                        showModal();
+                        // deleteNode(index);
+                      }}
+                      className={styles.controlIconsdelete}
+                    />
                   </div>
                 </div>
               );
             })}
           {loading ? (
-            <div className={styles.chatContainer} style={{padding:"16px"}}>
-              <Skeleton loading={loading} active  avatar paragraph={{ rows: 4 }} />
+            <div className={styles.chatContainer} style={{ padding: "16px" }}>
+              <Skeleton
+                loading={loading}
+                active
+                avatar
+                paragraph={{ rows: 4 }}
+              />
             </div>
           ) : null}
         </div>
@@ -539,6 +753,22 @@ const PageTwo: React.FC<Props> = (props) => {
           />
         </div>
       </div>
+
+      <Modal
+        title="Delete Cofirm"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
+        {deleteProgress[1] === 0 ? (
+          <p>All the nodes below this node will also be deleted!</p>
+        ) : (
+          <Progress
+            percent={Math.floor((deleteProgress[0] / deleteProgress[1]) * 100)}
+            strokeColor={{ "0%": "#108ee9", "100%": "#87d068" }}
+          />
+        )}
+      </Modal>
     </>
   );
 };
