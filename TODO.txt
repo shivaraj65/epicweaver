@@ -9,7 +9,6 @@ create page:-
 5 delete traverse bug.
 6 sibbling count indicator.
 7 story title update.
-8 font size reduction.
 
 
 workspace:- 
@@ -26,6 +25,11 @@ explore page:-
 settings:-
 
 1 UI implementation.
+
+landing:-
+
+1 buttons glitch
+2 sections incomplete
 
 
 logout functionality
