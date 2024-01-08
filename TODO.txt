@@ -1,0 +1,31 @@
+TODO:--
+
+create page:-
+
+1 teast meassages.
+2 error messages.
+3 prompt refinement.
+4 new node traverse bug.
+5 delete traverse bug.
+6 sibbling count indicator.
+7 story title update.
+8 font size reduction.
+
+
+workspace:- 
+
+1 refined UI.
+2 search feature.
+
+
+explore page:- 
+
+1 UI implementation.
+2 search feature.
+
+settings:-
+
+1 UI implementation.
+
+
+logout functionality

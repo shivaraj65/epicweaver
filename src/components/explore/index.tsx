@@ -152,7 +152,7 @@ const Explore = () => {
   };
 
 
-  
+
   const updateStory = async () => {
     let body = {
       id: "b7a88beb-2021-4f89-9d21-1d3e6cb60ad3",
@@ -174,6 +174,7 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
+  //done
   const updateNode = async () => {
     let body = {
       id: "8933e0fb-0207-427f-9a5b-cdbca23770a6",
@@ -195,6 +196,7 @@ const Explore = () => {
     // const result = await JSON.parse(resWithoutStreaming);
     console.log(resWithoutStreaming);
   };
+
 
   const updateUser = async () => {
     //not for password update... only for user name and keys update
