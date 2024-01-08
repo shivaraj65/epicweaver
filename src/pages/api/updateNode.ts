@@ -21,7 +21,7 @@ export default async function handler(
         },
       data: {
         context: req.body?.context,
-        minifiedContext: req.body?.title, 
+        minifiedContext: req.body?.title ? req.body?.title :"", 
         publishedStatus: req.body?.publishedStatus,
         prompt: req.body?.prompt
       },

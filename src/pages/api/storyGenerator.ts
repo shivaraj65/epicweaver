@@ -44,7 +44,7 @@ export default async function handler(
         apiKey: key,
         temperature: req.body?.temperature,
         modelName: "models/text-bison-001",
-        maxOutputTokens: 1024,
+        // maxOutputTokens: 1024,
         // topK: 40,
         // topP: 1,
         // safetySettings: [
@@ -78,6 +78,7 @@ export default async function handler(
           req.body?.prompt
         );
         const result = await model.call(filledPrompt);
+        console.log(result);
         //parser logic...
         const parts = result.split("\n");
         // const title = "" + parts[0].trim();
@@ -91,6 +92,7 @@ export default async function handler(
           .replace("{{prompt}}", req.body?.prompt)
           .replace("{{previousStory}}", req.body?.previousStory || "");
         const result = await model.call(filledPrompt);
+        console.log(result);
         //parser logic...
         const parts = result.split("\n");
         const title = "" + parts[0].trim();

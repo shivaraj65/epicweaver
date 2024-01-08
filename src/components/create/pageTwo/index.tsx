@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import styles from "./pageTwo.module.css";
 import Image from "next/image";
 
-import { Breadcrumb, Input, Skeleton } from "antd";
+import {
+  Breadcrumb,
+  Input,
+  Skeleton,
+  Popover,
+  Modal,
+  Progress,
+  Flex,
+  Button,
+  Spin,
+} from "antd";
 import {
   SendOutlined,
   UserOutlined,
@@ -11,6 +21,9 @@ import {
   RedoOutlined,
   FormOutlined,
   DeleteOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  CheckOutlined,
 } from "@ant-design/icons";
 
 import userCreds from "@/store/userCreds";
@@ -22,6 +35,8 @@ import GPT from "@/assets/icons/GPT.svg";
 interface Props {
   setPageFlag: Function;
 }
+
+const { TextArea } = Input;
 
 //sample dummy data
 //initial raw data.
@@ -159,11 +174,27 @@ const PageTwo: React.FC<Props> = (props) => {
 
   const [storyData] = userCreds(useShallow((state) => [state.storyData]));
 
+  const [triggerIndex, setTriggerIndex] = useState<any>(-1);
+
+  const [deleteProgress, setDeleteProgress] = useState<any>([0, 0]);
+
   const [loading, setLoading] = useState(false);
+
+  const [internalLoading, setInternalLoading] = useState(false);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [editingMode, setEditingMode] = useState([-1, -1]);
+
+  const [editPrompt, setEditPrompt] = useState<any>(null);
+
+  const [editTitle, setEditTitle] = useState<any>(null);
+
+  const [editStory, setEditStory] = useState<any>(null);
 
   useEffect(() => {
     (async () => {
-      setLoading(true)
+      setLoading(true);
       // console.log(storyData, "from page 2");
       if (storyData) {
         let body = {
@@ -188,7 +219,7 @@ const PageTwo: React.FC<Props> = (props) => {
 
   useEffect(() => {
     (() => {
-      setLoading(true)
+      setLoading(true);
       if (bronzeLayer) {
         console.log("silver layer refinement started");
         let refinedObject: any = {};
@@ -233,7 +264,7 @@ const PageTwo: React.FC<Props> = (props) => {
           setGoldlayer(refinedArray);
         }
       }
-      setLoading(false)
+      setLoading(false);
     })();
   }, [bronzeLayer]);
 
@@ -306,7 +337,7 @@ const PageTwo: React.FC<Props> = (props) => {
   };
 
   const promptSubmit = async () => {
-    setLoading(true)
+    setLoading(true);
     // console.log("prompt submit", input);
     //call the api 101
     if (goldLayer && goldLayer.length === 0) {
@@ -386,14 +417,8 @@ const PageTwo: React.FC<Props> = (props) => {
         prompt: input,
       };
       await createNode(res);
-      //push it to bronzeLayer
-      let temp = [...bronzeLayer, res];
-      setBronzeLayer(temp);
-      //push to gold layer
-      let tempG = [...goldLayer, res];
-      setGoldlayer(tempG);
     }
-    setLoading(false)
+    setLoading(false);
     //101
     //clear input + loaders
     setInput("");
@@ -413,15 +438,241 @@ const PageTwo: React.FC<Props> = (props) => {
     // console.log(resWithoutStreaming);
     if (result.status !== "success") {
       //101 api DB problem
+    } else {
+      //push it to bronzeLayer
+      let temp = [...bronzeLayer, result.data];
+      setBronzeLayer(temp);
+      //push to gold layer
+      let tempG = [...goldLayer, result.data];
+      console.log(tempG, "new gold layer data");
+      setGoldlayer(tempG);
     }
     console.log("node save", result);
   };
 
-  const regenerate = async () => {};
+  const updateNodeContext = async () => {
+    if (editingMode[1] === 1) {
+      let body = {
+        id: goldLayer[goldLayer.length - 1].id,
+        context: editStory,
+        title: editTitle,
+        publishedStatus: goldLayer[goldLayer.length - 1].publishedStatus,
+        prompt: goldLayer[goldLayer.length - 1].prompt,
+      };
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": " application/json; charset=utf-8",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch("/api/updateNode", requestOptions);
+      const resWithoutStreaming = await new Response(response.body).text();
+      const result = await JSON.parse(resWithoutStreaming);
+      console.log(result);
+      if (result.status === "success") {
+        goldLayer[goldLayer.length - 1] = result.data;
+        setEditTitle(null);
+        setEditStory(null);
+        setEditingMode([-1, -1]);
+      } else {
+        //101 alert
 
-  const rephrase = async () => {};
+        setEditTitle(null);
+        setEditStory(null);
+        setEditingMode([-1, -1]);
+      }
+    }
+  };
 
-  const deleteNode = async () => {};
+  const rephrase = async () => {
+    if (editingMode[1] === 0) {
+      let body = null;
+      if (goldLayer.length === 1) {
+        body = {
+          model: storyData.model,
+          temperature: Number(storyData.temperature),
+          userid: localStorage.getItem("credId"),
+          prompt: editPrompt,
+          templateStyle: "startNew",
+        };
+      } else {
+        let previousStory = "";
+        for (let i = 0; i < goldLayer.length - 1; i++) {
+          previousStory = previousStory + goldLayer[i].context + " ";
+        }
+        body = {
+          model: storyData.model,
+          temperature: Number(storyData.temperature),
+          userid: localStorage.getItem("credId"),
+          prompt: editPrompt,
+          previousStory: previousStory,
+          templateStyle: "continueExisting",
+        };
+      }
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": " application/json; charset=utf-8",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch("/api/storyGenerator", requestOptions);
+      const resWithoutStreaming = await new Response(response.body).text();
+      const result = await JSON.parse(resWithoutStreaming);
+      //update db...
+      if (result.status === "success") {
+        updatePrompt(result);
+      } else {
+        //101 alert
+
+        setEditPrompt(null);
+        setEditingMode([-1, -1]);
+        setInternalLoading(false);
+      }
+    }
+  };
+
+  const updatePrompt = async (data: any) => {
+    let body = {
+      id: goldLayer[goldLayer.length - 1].id,
+      context: data.story,
+      title: data.title,
+      publishedStatus: goldLayer[goldLayer.length - 1].publishedStatus,
+      prompt:
+        editingMode[1] === 0
+          ? editPrompt
+          : goldLayer[goldLayer.length - 1].prompt,
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/updateNode", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    console.log(result);
+    if (result.status === "success") {
+      goldLayer[goldLayer.length - 1] = result.data;
+      setEditPrompt(null);
+      setEditingMode([-1, -1]);
+      setInternalLoading(false);
+    } else {
+      //101 alert
+
+      setEditPrompt(null);
+      setEditingMode([-1, -1]);
+      setInternalLoading(false);
+    }
+  };
+
+  const regenerate = async (index: any) => {
+    let body = null;
+    if (goldLayer.length === 1) {
+      body = {
+        model: storyData.model,
+        temperature: Number(storyData.temperature),
+        userid: localStorage.getItem("credId"),
+        prompt: goldLayer[goldLayer.length - 1].prompt,
+        templateStyle: "startNew",
+      };
+    } else {
+      let previousStory = "";
+      for (let i = 0; i < goldLayer.length - 1; i++) {
+        previousStory = previousStory + goldLayer[i].context + " ";
+      }
+      body = {
+        model: storyData.model,
+        temperature: Number(storyData.temperature),
+        userid: localStorage.getItem("credId"),
+        prompt: goldLayer[goldLayer.length - 1].prompt,
+        previousStory: previousStory,
+        templateStyle: "continueExisting",
+      };
+    }
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/storyGenerator", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    //update db...
+    if (result.status === "success") {
+      updatePrompt(result);
+    } else {
+      //101 alert
+
+      setEditingMode([-1, -1]);
+      setInternalLoading(false);
+    }
+  };
+
+  const addNode = async (index: any) => {
+    setGoldlayer(goldLayer.slice(0, index + 1));
+  };
+
+  const deleteNode = async (index: any) => {
+    setDeleteProgress([0, goldLayer.length - index]);
+    let tracker = 0;
+    for (let i = index; i < goldLayer.length; i++) {
+      let body = {
+        id: goldLayer[i].id,
+      };
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": " application/json; charset=utf-8",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch("/api/deleteNode", requestOptions);
+      const resWithoutStreaming = await new Response(response.body).text();
+      const result = await JSON.parse(resWithoutStreaming);
+      if (result.status === "success") {
+        tracker += 1;
+        setDeleteProgress([tracker, goldLayer.length - index]);
+      }
+    }
+    //delete sequence completed...
+    setDeleteProgress([0, 0]);
+    setIsModalOpen(false);
+
+    //update bronze layer...
+    let filteredArray = bronzeLayer;
+    for (let node = index; node < goldLayer.length; node++) {
+      filteredArray = bronzeLayer.filter(
+        (obj: any) => obj.id !== goldLayer[node].id
+      );
+    }
+    setBronzeLayer(filteredArray);
+
+    //update gold layer...
+    let tempGold = goldLayer.slice(0, index);
+    setGoldlayer(tempGold);
+
+    //reset the trigger index
+    setTriggerIndex(-1);
+  };
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    deleteNode(triggerIndex);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setTriggerIndex(-1);
+  };
 
   return (
     <>
@@ -469,7 +720,40 @@ const PageTwo: React.FC<Props> = (props) => {
 
                   <div style={{ width: "100%" }}>
                     <div className={styles.promptDiv}>
-                      <p className={styles.promptText}>{data.prompt}</p>
+                      {editingMode[0] === index &&
+                      editingMode[1] === 0 &&
+                      editPrompt !== null ? (
+                        <>
+                          <Input
+                            value={editPrompt}
+                            onChange={(e) => {
+                              setEditPrompt(e.target.value);
+                            }}
+                            disabled={internalLoading}
+                          />
+                          <Button
+                            style={{ margin: "0px 3px", padding: " 0 8px" }}
+                            onClick={() => {
+                              setInternalLoading(true);
+                              rephrase();
+                            }}
+                          >
+                            <CheckOutlined />
+                          </Button>
+                          <Button
+                            style={{ margin: "0px 3px", padding: " 0 8px" }}
+                            onClick={() => {
+                              setInternalLoading(false);
+                              setEditingMode([-1, -1]);
+                              setEditPrompt(null);
+                            }}
+                          >
+                            <CloseOutlined />
+                          </Button>
+                        </>
+                      ) : (
+                        <p className={styles.promptText}>{data.prompt ? data.prompt :""}</p>
+                      )}
                       <UserOutlined className={styles.userIcon} />
                     </div>
 
@@ -480,17 +764,81 @@ const PageTwo: React.FC<Props> = (props) => {
                         height={25}
                         alt={"icon"}
                       ></Image>
-                      <div className={styles.contextInnerDiv}>
-                        {data.previousNodeId !== "null" ? (
-                          <p className={styles.title}>
-                            <span className={styles.titleTitle}>
-                              Title : &nbsp;
-                            </span>
-                            {data.minifiedContext}
-                          </p>
-                        ) : null}
 
-                        <p className={styles.storyBlock}>{data.context}</p>
+                      <div className={styles.contextInnerDiv}>
+                        {editingMode[0] === index && internalLoading ? (
+                          <div className={styles.SpinnerDiv}>
+                            <Spin size={"small"} style={{ color: "#57c5b6" }} />
+                          </div>
+                        ) : (
+                          <>
+                            {data.previousNodeId !== "null" ? (
+                              editingMode[0] === index &&
+                              editingMode[1] === 1 &&
+                              editTitle !== null ? (
+                                <Input
+                                  className={styles.title}
+                                  value={editTitle}
+                                  onChange={(e) => {
+                                    setEditTitle(e.target.value);
+                                  }}
+                                />
+                              ) : (
+                                <p className={styles.title}>
+                                  <span className={styles.titleTitle}>
+                                    Title : &nbsp;
+                                  </span>
+                                  {data.minifiedContext}
+                                </p>
+                              )
+                            ) : null}
+                            {editingMode[0] === index &&
+                            editingMode[1] === 1 &&
+                            editStory !== null ? (
+                              <>
+                                <TextArea
+                                  className={styles.storyBlock}
+                                  rows={8}
+                                  value={editStory}
+                                  onChange={(e) => {
+                                    setEditStory(e.target.value);
+                                  }}
+                                />
+                                <br />
+                                <div className={styles.StoryEditDivController}>
+                                  <Button
+                                    style={{
+                                      margin: "0px 3px",
+                                      padding: " 0 8px",
+                                    }}
+                                    onClick={() => {
+                                      updateNodeContext();
+                                    }}
+                                  >
+                                    <CheckOutlined />
+                                  </Button>
+                                  <Button
+                                    style={{
+                                      margin: "0px 3px",
+                                      padding: " 0 8px",
+                                    }}
+                                    onClick={() => {
+                                      setEditingMode([-1, -1]);
+                                      setEditTitle(null);
+                                      setEditStory(null);
+                                    }}
+                                  >
+                                    <CloseOutlined />
+                                  </Button>
+                                </div>
+                              </>
+                            ) : (
+                              <p className={styles.storyBlock}>
+                                {data.context}
+                              </p>
+                            )}
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -505,19 +853,70 @@ const PageTwo: React.FC<Props> = (props) => {
                   <div className={styles.floaterContollerDiv}>
                     {goldLayer[goldLayer.length - 1].id === data.id ? (
                       <>
-                        <RedoOutlined className={styles.controlIcons} />
-                        <FormOutlined className={styles.controlIcons} />
+                        <RedoOutlined
+                          onClick={() => {
+                            setInternalLoading(true);
+                            setEditingMode([index, 2]);
+                            regenerate(index);
+                          }}
+                          className={styles.controlIcons}
+                        />
+                        <Popover
+                          content={
+                            <div>
+                              <Flex gap="small" wrap="wrap">
+                                <Button
+                                  onClick={() => {
+                                    setEditPrompt(data.prompt);
+                                    setEditingMode([index, 0]);
+                                  }}
+                                >
+                                  Edit prompt
+                                </Button>
+                                <Button
+                                  onClick={() => {
+                                    setEditTitle(data.minifiedContext);
+                                    setEditStory(data.context);
+                                    setEditingMode([index, 1]);
+                                  }}
+                                >
+                                  Edit Story
+                                </Button>
+                              </Flex>
+                            </div>
+                          }
+                          trigger="hover"
+                        >
+                          <FormOutlined className={styles.controlIcons} />
+                        </Popover>
                       </>
                     ) : null}
-
-                    <DeleteOutlined className={styles.controlIconsdelete} />
+                    <PlusOutlined
+                      onClick={() => {
+                        addNode(index);
+                      }}
+                      className={styles.controlIcons}
+                    />
+                    <DeleteOutlined
+                      onClick={() => {
+                        setTriggerIndex(index);
+                        showModal();
+                        // deleteNode(index);
+                      }}
+                      className={styles.controlIconsdelete}
+                    />
                   </div>
                 </div>
               );
             })}
           {loading ? (
-            <div className={styles.chatContainer} style={{padding:"16px"}}>
-              <Skeleton loading={loading} active  avatar paragraph={{ rows: 4 }} />
+            <div className={styles.chatContainer} style={{ padding: "16px" }}>
+              <Skeleton
+                loading={loading}
+                active
+                avatar
+                paragraph={{ rows: 4 }}
+              />
             </div>
           ) : null}
         </div>
@@ -527,6 +926,7 @@ const PageTwo: React.FC<Props> = (props) => {
             className={styles.inputFloater}
             autoFocus
             size="large"
+            disabled={loading}
             suffix={<SendOutlined />}
             value={input}
             onChange={(e) => {
@@ -539,6 +939,26 @@ const PageTwo: React.FC<Props> = (props) => {
           />
         </div>
       </div>
+
+      <Modal
+        title="Delete Cofirm"
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        maskClosable={false}
+      >
+        {deleteProgress[1] === 0 ? (
+          <p>
+            Selected node and all the linked node below the current node in this
+            tree will be deleted.
+          </p>
+        ) : (
+          <Progress
+            percent={Math.floor((deleteProgress[0] / deleteProgress[1]) * 100)}
+            strokeColor={{ "0%": "#108ee9", "100%": "#87d068" }}
+          />
+        )}
+      </Modal>
     </>
   );
 };
