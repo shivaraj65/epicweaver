@@ -7,8 +7,13 @@ import {
   EllipsisOutlined,
   ThunderboltOutlined,
   ReadOutlined,
+  EyeInvisibleOutlined,
+  CloudUploadOutlined,
+  RestOutlined,
+  DeleteOutlined
+
 } from "@ant-design/icons";
-import { Row, Col } from "antd";
+import { Row, Col, Popover } from "antd";
 
 import userCreds from "@/store/userCreds";
 import { useShallow } from "zustand/react/shallow";
@@ -21,14 +26,18 @@ const Workspace = () => {
   const router = useRouter();
 
   const [pageFlag, setPageFlag, setStoryData] = userCreds(
-    useShallow((state) => [state.pageFlag, state.setPageFlag, state.setStoryData])
+    useShallow((state) => [
+      state.pageFlag,
+      state.setPageFlag,
+      state.setStoryData,
+    ])
   );
 
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    if(pageFlag === 0){
-      setStoryData(null)
+    if (pageFlag === 0) {
+      setStoryData(null);
     }
     if (localStorage.getItem("credId")) {
       (async () => {
@@ -46,10 +55,10 @@ const Workspace = () => {
         const resWithoutStreaming = await new Response(response.body).text();
         const result = await JSON.parse(resWithoutStreaming);
         // console.log(result);
-        if(result.status === "success"){
-          setData(result.data)
-        }else{
-          alert('error message')
+        if (result.status === "success") {
+          setData(result.data);
+        } else {
+          alert("error message");
         }
       })();
     } else {
@@ -76,49 +85,71 @@ const Workspace = () => {
             <p className={styles.sectionTitle}>Your recent works</p>
 
             <Row>
-              {data && data?.map((datai: any, index: number) => {
-                return (
-                  <Col span={6} className={styles.colStyle} key={index}>
-                    <div className={styles.storyCard} onClick={()=>{
-                      setStoryData(datai)
-                      setPageFlag(1)                     
-                    }}>
-                      <Row className={styles.storyCardRow}>
-                        <Col span={6}>
-                          <div className={styles.storyCardImageDiv}>
-                            <img
+              {data &&
+                data?.map((datai: any, index: number) => {
+                  return (
+                    <Col span={6} className={styles.colStyle} key={index}>
+                      <div className={styles.storyCard}>
+                        <Row className={styles.storyCardRow}>
+                          <Col span={8}>
+                            <div
+                              className={styles.storyCardImageDiv}
+                              onClick={() => {
+                                setStoryData(datai);
+                                setPageFlag(1);
+                              }}
+                            >
+                              {/* <img
                               width="50"
                               height="50"
                               src="https://img.icons8.com/color/96/open-book--v1.png"
                               alt="open-book--v1"
-                            />
-                          </div>
-                        </Col>
-                        <Col span={18}>
-                          <div className={styles.StoryContentDiv}>
-                            <div>
-                              <p className={styles.storyTitle}>
-                                {datai.title}
-                              </p>
+                            /> */}
                             </div>
-                            <div className={styles.storyActionItems}>
-                              <EditOutlined
-                                className={styles.storyContorlIcon}
-                              />
-                              {/* <ReadOutlined
+                          </Col>
+                          <Col span={16}>
+                            <div className={styles.StoryContentDiv}>
+                              <div>
+                                <p
+                                  className={styles.storyTitle}
+                                  onClick={() => {
+                                    setStoryData(datai);
+                                    setPageFlag(1);
+                                  }}
+                                >
+                                  {datai.title}
+                                </p>
+                              </div>
+                              <div className={styles.storyActionItems}>
+                                {/* <EditOutlined
+                                  className={styles.storyContorlIcon}
+                                /> */}
+                                {/* <ReadOutlined
                                 className={styles.storyContorlIcon}
                               /> */}
-                              <EllipsisOutlined
-                                className={styles.storyContorlIcon}
-                              />
+
+                                <Popover content={<div>
+                                  <span className={styles.popoverItem}><EditOutlined /> Rename</span>       
+                                  <span className={styles.popoverItem}><CloudUploadOutlined /> Publish</span>                           
+                                  <span className={styles.popoverItem}><EyeInvisibleOutlined /> Unpublish</span>                                  
+                                  {/* <hr style={{color:"#b4b4b4", width:"20%",margin:"auto"}} /> */}
+                                  {/* <span className={styles.popoverItemDelete}> <RestOutlined /> delete from story3</span> */}
+                                  <span className={styles.popoverItemDelete}><DeleteOutlined /> Delete Story</span>
+                                </div>} 
+                                trigger="click" 
+                                placement="right">
+                                  <EllipsisOutlined
+                                    className={styles.storyContorlIcon}
+                                  />
+                                </Popover>
+                              </div>
                             </div>
-                          </div>
-                        </Col>
-                      </Row>
-                    </div>
-                  </Col>
-                );
-              })}
+                          </Col>
+                        </Row>
+                      </div>
+                    </Col>
+                  );
+                })}
             </Row>
           </div>
         </>

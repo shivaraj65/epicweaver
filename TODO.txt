@@ -13,9 +13,9 @@ create page:-
 
 workspace:- 
 
-1 refined UI.
+1 refined UI. --working
 2 search feature.
-
+3 reading page
 
 explore page:- 
 
