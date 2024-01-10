@@ -40,7 +40,7 @@
   background-color: #fff;
   padding: 16px;
   border-radius: 8px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px;
   min-height: 250px;
 }
 
@@ -98,7 +98,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  margin-top: 36px;
+  margin-top: 32px;
+  margin-bottom: 4px;
 }
 
 .storyTitle:hover {

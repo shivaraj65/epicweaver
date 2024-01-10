@@ -18,10 +18,9 @@ workspace:-
 3 reading page
 4 functionality
 
-explore page:- 
 
-1 UI implementation.
-2 search feature.
+explore page:-  remove
+
 
 settings:-
 

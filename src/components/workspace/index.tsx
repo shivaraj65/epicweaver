@@ -107,7 +107,7 @@ const Workspace = () => {
                             </div>
                           </Col>
                           <Col span={16}>
-                            <Badge.Ribbon text="published" color="cyan">
+                            <Badge.Ribbon text="Published" color="cyan">
                               <div className={styles.StoryContentDiv}>
                                 <div>
                                   <p
