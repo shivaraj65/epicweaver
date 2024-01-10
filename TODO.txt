@@ -2,13 +2,13 @@ TODO:--
 
 create page:-
 
-1 teast meassages.
-2 error messages.
+1 toast meassages. 11-1-2024
+2 error messages. 11-1-2024
 3 prompt refinement.
 4 new node traverse bug.
 5 delete traverse bug.
 6 sibbling count indicator.
-7 story title update.
+7 story title update. 11-1-2024
 
 
 workspace:- 
@@ -24,12 +24,12 @@ explore page:-  remove
 
 settings:-
 
-1 UI implementation.
+1 UI implementation. 11-1-2024
 
 landing:-
 
-1 buttons glitch
-2 sections incomplete
+1 buttons glitch 12-1-2024
+2 sections incomplete 12-1-2024
 
 
-logout functionality
+logout functionality 12-1-2024
