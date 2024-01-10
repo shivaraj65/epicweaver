@@ -13,9 +13,10 @@ create page:-
 
 workspace:- 
 
-1 refined UI. --working
+1 refined UI. --done
 2 search feature.
 3 reading page
+4 functionality
 
 explore page:- 
 

@@ -97,6 +97,8 @@
   font-weight: 400;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 36px;
 }
 
 .storyTitle:hover {
@@ -104,7 +106,8 @@
 }
 
 .storyActionItems{
-    position: absolute;
+    position:static;
+    float: right;
     bottom:8px;
     right:3px;
 }
@@ -112,7 +115,7 @@
 .storyContorlIcon{
     background-color: #fefefe;
     font-size: 1.2rem;
-    margin: 0 8px ;
+    /* margin: 0 8px ; */
     padding:3px 5px;
     color:#b4b4b4;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 2px;

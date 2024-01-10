@@ -4,16 +4,15 @@ import { useRouter } from "next/router";
 
 import {
   EditOutlined,
-  EllipsisOutlined,
+  MoreOutlined,
   ThunderboltOutlined,
   ReadOutlined,
   EyeInvisibleOutlined,
   CloudUploadOutlined,
   RestOutlined,
-  DeleteOutlined
-
+  DeleteOutlined,
 } from "@ant-design/icons";
-import { Row, Col, Popover } from "antd";
+import { Row, Col, Popover, Badge } from "antd";
 
 import userCreds from "@/store/userCreds";
 import { useShallow } from "zustand/react/shallow";
@@ -108,42 +107,58 @@ const Workspace = () => {
                             </div>
                           </Col>
                           <Col span={16}>
-                            <div className={styles.StoryContentDiv}>
-                              <div>
-                                <p
-                                  className={styles.storyTitle}
-                                  onClick={() => {
-                                    setStoryData(datai);
-                                    setPageFlag(1);
-                                  }}
-                                >
-                                  {datai.title}
-                                </p>
-                              </div>
-                              <div className={styles.storyActionItems}>
-                                {/* <EditOutlined
+                            <Badge.Ribbon text="published" color="cyan">
+                              <div className={styles.StoryContentDiv}>
+                                <div>
+                                  <p
+                                    className={styles.storyTitle}
+                                    onClick={() => {
+                                      setStoryData(datai);
+                                      setPageFlag(1);
+                                    }}
+                                  >
+                                    {datai.title}
+                                  </p>
+                                </div>
+                                <div className={styles.storyActionItems}>
+                                  {/* <EditOutlined
                                   className={styles.storyContorlIcon}
                                 /> */}
-                                {/* <ReadOutlined
+                                  {/* <ReadOutlined
                                 className={styles.storyContorlIcon}
                               /> */}
 
-                                <Popover content={<div>
-                                  <span className={styles.popoverItem}><EditOutlined /> Rename</span>       
-                                  <span className={styles.popoverItem}><CloudUploadOutlined /> Publish</span>                           
-                                  <span className={styles.popoverItem}><EyeInvisibleOutlined /> Unpublish</span>                                  
-                                  {/* <hr style={{color:"#b4b4b4", width:"20%",margin:"auto"}} /> */}
-                                  {/* <span className={styles.popoverItemDelete}> <RestOutlined /> delete from story3</span> */}
-                                  <span className={styles.popoverItemDelete}><DeleteOutlined /> Delete Story</span>
-                                </div>} 
-                                trigger="click" 
-                                placement="right">
-                                  <EllipsisOutlined
-                                    className={styles.storyContorlIcon}
-                                  />
-                                </Popover>
+                                  <Popover
+                                    content={
+                                      <div>
+                                        <span className={styles.popoverItem}>
+                                          <EditOutlined /> Rename
+                                        </span>
+                                        <span className={styles.popoverItem}>
+                                          <CloudUploadOutlined /> Publish
+                                        </span>
+                                        <span className={styles.popoverItem}>
+                                          <EyeInvisibleOutlined /> Unpublish
+                                        </span>
+                                        {/* <hr style={{color:"#b4b4b4", width:"20%",margin:"auto"}} /> */}
+                                        {/* <span className={styles.popoverItemDelete}> <RestOutlined /> delete from story3</span> */}
+                                        <span
+                                          className={styles.popoverItemDelete}
+                                        >
+                                          <DeleteOutlined /> Delete Story
+                                        </span>
+                                      </div>
+                                    }
+                                    trigger="click"
+                                    placement="right"
+                                  >
+                                    <MoreOutlined
+                                      className={styles.storyContorlIcon}
+                                    />
+                                  </Popover>
+                                </div>
                               </div>
-                            </div>
+                            </Badge.Ribbon>
                           </Col>
                         </Row>
                       </div>
