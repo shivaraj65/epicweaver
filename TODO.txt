@@ -6,30 +6,23 @@ create page:-
 2 error messages. 11-1-2024
 3 prompt refinement.
 4 new node traverse bug.
-5 delete traverse bug.
-6 sibbling count indicator.
-7 story title update. 11-1-2024
+5 delete traverse bug.          --now
+6 sibbling count indicator.        --now
+7 story title update. 11-1-2024     --now
 
 
 workspace:- 
 
-1 refined UI. --done
-2 search feature.
-3 reading page
-4 functionality
+1 search feature.   --hold
+2 reading page  --hold
+3 functionality 
 
 
-explore page:-  remove
-
-
-settings:-
-
-1 UI implementation. 11-1-2024
 
 landing:-
 
-1 buttons glitch 12-1-2024
+1 buttons glitch 12-1-2024 
 2 sections incomplete 12-1-2024
 
 
-logout functionality 12-1-2024
+logout functionality 12-1-2024      --now

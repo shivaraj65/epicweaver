@@ -1,0 +1,80 @@
+
+.rootContainer{
+    width:1005;
+    height:100%;
+    padding:25px;
+}
+
+.container {
+    height: 100%;
+    padding: 18px;
+    background-color: #fefefe;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px;
+  }
+
+  .headerTitle{
+    font-size: 1.6rem;
+    color: #57c5b6;
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+    margin-bottom: 24px;
+}
+
+.row{
+    margin-top: 10px;
+}
+
+  .userIconDiv{
+    text-align: center;
+    padding:8px
+  }
+
+  .userIcon{
+    border-radius: 50%;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 6px;
+    padding: 6px;
+  }
+
+  .userDetails{
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+    color:#8d8d8d;
+    font-size: 1rem;
+  }
+
+  .tableCol1{
+    /* width:40%; */
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+    color:#5e5e5e;
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+  .tableCol2{
+    /* width:60%; */
+    overflow-x: hidden;
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+    color:#8d8d8d;
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .modalMableCol1{
+    /* width:40%; */
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+    color:#5e5e5e;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+  .modalTableCol2{
+    /* width:60%; */
+    overflow-x: hidden;
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+    color:#8d8d8d;
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+  }

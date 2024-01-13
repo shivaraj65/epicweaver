@@ -206,8 +206,8 @@ const Explore = () => {
       story3ApiKey:
         "",
       palmApiKey: "",
-      gpt35Key: "test update",
-      gpt4Key: "test update",
+      gpt35Key: "",
+      gpt4Key: "",
     };
     const requestOptions: RequestInit = {
       method: "POST",
