@@ -651,12 +651,22 @@ const PageTwo: React.FC<Props> = (props) => {
         (obj: any) => obj.id !== goldLayer[node].id
       );
     }
-    setBronzeLayer(filteredArray);
+    await setBronzeLayer(filteredArray);
 
     //update gold layer...
-    let tempGold = goldLayer.slice(0, index);
-    setGoldlayer(tempGold);
-
+    let newGoldLayer = await goldLayer.slice(0, index);
+    // console.log(newGoldLayer)
+    //check for sibblings...
+    let traverseArr = silverLayer[goldLayer[index].previousNodeId];
+    console.log("traverse arr", traverseArr);
+    if (traverseArr.length > 1) {
+      let ticker = traverseArr[0];
+      while (ticker) {
+        newGoldLayer.push(ticker);
+        ticker = silverLayer[ticker.id];
+      }
+      setGoldlayer(newGoldLayer);
+    }
     //reset the trigger index
     setTriggerIndex(-1);
   };
@@ -752,7 +762,9 @@ const PageTwo: React.FC<Props> = (props) => {
                           </Button>
                         </>
                       ) : (
-                        <p className={styles.promptText}>{data.prompt ? data.prompt :""}</p>
+                        <p className={styles.promptText}>
+                          {data.prompt ? data.prompt : ""}
+                        </p>
                       )}
                       <UserOutlined className={styles.userIcon} />
                     </div>
@@ -891,12 +903,15 @@ const PageTwo: React.FC<Props> = (props) => {
                         </Popover>
                       </>
                     ) : null}
-                    <PlusOutlined
-                      onClick={() => {
-                        addNode(index);
-                      }}
-                      className={styles.controlIcons}
-                    />
+                    {goldLayer.length - 1 !== index ? (
+                      <PlusOutlined
+                        onClick={() => {
+                          addNode(index);
+                        }}
+                        className={styles.controlIcons}
+                      />
+                    ) : null}
+
                     <DeleteOutlined
                       onClick={() => {
                         setTriggerIndex(index);
