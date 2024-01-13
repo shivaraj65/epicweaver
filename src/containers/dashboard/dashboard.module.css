@@ -102,3 +102,13 @@
 .profile:hover {
   cursor: pointer;
 }
+
+.logoutButton{
+  color:#57c5b6 !important;
+  border: 1px solid #57c5b6 !important;
+  width: 130px !important;
+}
+.logoutButton:hover{
+  color:#57c5b6 !important;
+  border: 1px solid #57c5b6 !important;
+}

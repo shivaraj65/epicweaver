@@ -12,7 +12,7 @@ import {
   RestOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { Row, Col, Popover, Badge } from "antd";
+import { Row, Col, Popover, Badge, Skeleton } from "antd";
 
 import userCreds from "@/store/userCreds";
 import { useShallow } from "zustand/react/shallow";
@@ -166,6 +166,22 @@ const Workspace = () => {
                   );
                 })}
             </Row>
+            {!data ? (
+              <Row>
+                <Col span={6} className={styles.colStyle}>
+                  <Skeleton active />
+                </Col>
+                <Col span={6} className={styles.colStyle}>
+                  <Skeleton active />
+                </Col>
+                <Col span={6} className={styles.colStyle}>
+                  <Skeleton active />
+                </Col>
+                <Col span={6} className={styles.colStyle}>
+                  <Skeleton active />
+                </Col>
+              </Row>
+            ) : null}
           </div>
         </>
       ) : pageFlag === 1 ? (

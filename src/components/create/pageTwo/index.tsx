@@ -12,6 +12,7 @@ import {
   Flex,
   Button,
   Spin,
+  message
 } from "antd";
 import {
   SendOutlined,
@@ -164,6 +165,8 @@ const intermediateData = {
 };
 
 const PageTwo: React.FC<Props> = (props) => {
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [input, setInput] = useState("");
 
   const [bronzeLayer, setBronzeLayer] = useState<any>(null);
@@ -338,8 +341,6 @@ const PageTwo: React.FC<Props> = (props) => {
 
   const promptSubmit = async () => {
     setLoading(true);
-    // console.log("prompt submit", input);
-    //call the api 101
     if (goldLayer && goldLayer.length === 0) {
       //first prompt
       let body = {
@@ -419,8 +420,6 @@ const PageTwo: React.FC<Props> = (props) => {
       await createNode(res);
     }
     setLoading(false);
-    //101
-    //clear input + loaders
     setInput("");
   };
 
@@ -437,7 +436,10 @@ const PageTwo: React.FC<Props> = (props) => {
     const result = await JSON.parse(resWithoutStreaming);
     // console.log(resWithoutStreaming);
     if (result.status !== "success") {
-      //101 api DB problem
+      messageApi.open({
+        type: 'error',
+        content: 'Server Error!',
+      });
     } else {
       //push it to bronzeLayer
       let temp = [...bronzeLayer, result.data];
@@ -476,8 +478,10 @@ const PageTwo: React.FC<Props> = (props) => {
         setEditStory(null);
         setEditingMode([-1, -1]);
       } else {
-        //101 alert
-
+        messageApi.open({
+          type: 'error',
+          content: 'Server Error',
+        });
         setEditTitle(null);
         setEditStory(null);
         setEditingMode([-1, -1]);
@@ -524,8 +528,10 @@ const PageTwo: React.FC<Props> = (props) => {
       if (result.status === "success") {
         updatePrompt(result);
       } else {
-        //101 alert
-
+        messageApi.open({
+          type: 'error',
+          content: 'Server Error',
+        });
         setEditPrompt(null);
         setEditingMode([-1, -1]);
         setInternalLoading(false);
@@ -561,8 +567,10 @@ const PageTwo: React.FC<Props> = (props) => {
       setEditingMode([-1, -1]);
       setInternalLoading(false);
     } else {
-      //101 alert
-
+      messageApi.open({
+        type: 'error',
+        content: 'Server Error',
+      });
       setEditPrompt(null);
       setEditingMode([-1, -1]);
       setInternalLoading(false);
@@ -607,8 +615,10 @@ const PageTwo: React.FC<Props> = (props) => {
     if (result.status === "success") {
       updatePrompt(result);
     } else {
-      //101 alert
-
+      messageApi.open({
+        type: 'error',
+        content: 'Server Error',
+      });
       setEditingMode([-1, -1]);
       setInternalLoading(false);
     }
@@ -651,12 +661,22 @@ const PageTwo: React.FC<Props> = (props) => {
         (obj: any) => obj.id !== goldLayer[node].id
       );
     }
-    setBronzeLayer(filteredArray);
+    await setBronzeLayer(filteredArray);
 
     //update gold layer...
-    let tempGold = goldLayer.slice(0, index);
-    setGoldlayer(tempGold);
-
+    let newGoldLayer = await goldLayer.slice(0, index);
+    // console.log(newGoldLayer)
+    //check for sibblings...
+    let traverseArr = silverLayer[goldLayer[index].previousNodeId];
+    console.log("traverse arr", traverseArr);
+    if (traverseArr.length > 1) {
+      let ticker = traverseArr[0];
+      while (ticker) {
+        newGoldLayer.push(ticker);
+        ticker = silverLayer[ticker.id];
+      }
+      setGoldlayer(newGoldLayer);
+    }
     //reset the trigger index
     setTriggerIndex(-1);
   };
@@ -676,6 +696,7 @@ const PageTwo: React.FC<Props> = (props) => {
 
   return (
     <>
+    {contextHolder}
       <Breadcrumb style={{ marginBottom: "6px" }}>
         <Breadcrumb.Item
           onClick={() => {
@@ -752,7 +773,9 @@ const PageTwo: React.FC<Props> = (props) => {
                           </Button>
                         </>
                       ) : (
-                        <p className={styles.promptText}>{data.prompt ? data.prompt :""}</p>
+                        <p className={styles.promptText}>
+                          {data.prompt ? data.prompt : ""}
+                        </p>
                       )}
                       <UserOutlined className={styles.userIcon} />
                     </div>
@@ -891,12 +914,15 @@ const PageTwo: React.FC<Props> = (props) => {
                         </Popover>
                       </>
                     ) : null}
-                    <PlusOutlined
-                      onClick={() => {
-                        addNode(index);
-                      }}
-                      className={styles.controlIcons}
-                    />
+                    {goldLayer.length - 1 !== index ? (
+                      <PlusOutlined
+                        onClick={() => {
+                          addNode(index);
+                        }}
+                        className={styles.controlIcons}
+                      />
+                    ) : null}
+
                     <DeleteOutlined
                       onClick={() => {
                         setTriggerIndex(index);

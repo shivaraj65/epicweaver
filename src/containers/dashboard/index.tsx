@@ -8,7 +8,7 @@ import styles from "./dashboard.module.css";
 import userCreds from "@/store/userCreds";
 import { useShallow } from "zustand/react/shallow";
 
-import { Button, Row, Col, Input, message, Layout, Divider } from "antd";
+import { Button, Row, Col, Input, message, Layout, Divider, Popover } from "antd";
 import {
   CompassOutlined,
   FolderOpenOutlined,
@@ -63,6 +63,11 @@ const Dashboard = () => {
     }
   }, [checkCredIdInLocalStorage]);
 
+  const logout =()=>{
+    localStorage.clear();
+    router.push("/");
+  }
+
   return (
     <>
       {credName && credName !== "" ? (
@@ -113,11 +118,18 @@ const Dashboard = () => {
                   );
                 })}
               </div>
+              <Popover placement="top" trigger="click" content={
+                <div>
+                 <Button block className={styles.logoutButton} onClick={logout}>Logout</Button>
+                </div>
+              }>
               <div className={styles.profile}>
                 <UserOutlined />
                 &nbsp;&nbsp;&nbsp;
                 {credName}
               </div>
+        </Popover>
+              
             </div>
           </Sider>
           <Layout>
