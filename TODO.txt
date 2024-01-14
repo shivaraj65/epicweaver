@@ -2,18 +2,16 @@ TODO:--
 
 create page:-
 
-1 prompt refinement.
 2 new node traverse bug. --not necessary
 3 sibbling count indicator. 
 
 
 workspace:- 
 
-1 search feature.   --hold
-2 reading page  --hold
-3 functionality 
-4 story3 api 
-5 story3 integration
+3 functionality         -- 2/4 done
+4 story3 api            --done
+5 story3 integration    --in progress
+
 
 
 bugs:-
@@ -25,3 +23,9 @@ landing:-
 
 login & signup:- 
 1 loaders
+
+pageTwo 101 bug high priority.
+
+updating user db reset the local storages
+
+add a static warning alert about 1200 characters limit

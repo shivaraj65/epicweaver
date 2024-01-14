@@ -566,6 +566,8 @@ const PageTwo: React.FC<Props> = (props) => {
       setEditPrompt(null);
       setEditingMode([-1, -1]);
       setInternalLoading(false);
+      //reconstruct the bronze layer... 101
+
     } else {
       messageApi.open({
         type: 'error',
@@ -665,18 +667,24 @@ const PageTwo: React.FC<Props> = (props) => {
 
     //update gold layer...
     let newGoldLayer = await goldLayer.slice(0, index);
-    // console.log(newGoldLayer)
+    console.log(newGoldLayer)
     //check for sibblings...
     let traverseArr = silverLayer[goldLayer[index].previousNodeId];
     console.log("traverse arr", traverseArr);
-    if (traverseArr.length > 1) {
+    if (traverseArr && traverseArr?.length > 2) {
+      console.log("inside if condition")
       let ticker = traverseArr[0];
+      if(traverseArr[0].id !== goldLayer[index].id){
+        ticker = traverseArr[0];
+      }else{
+        ticker = traverseArr[1];
+      }
       while (ticker) {
         newGoldLayer.push(ticker);
         ticker = silverLayer[ticker.id];
       }
-      setGoldlayer(newGoldLayer);
     }
+    setGoldlayer(newGoldLayer);
     //reset the trigger index
     setTriggerIndex(-1);
   };

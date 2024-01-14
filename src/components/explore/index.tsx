@@ -102,7 +102,6 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
-
   //create-------
 
   //done
@@ -151,8 +150,6 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
-
-
   const updateStory = async () => {
     let body = {
       id: "b7a88beb-2021-4f89-9d21-1d3e6cb60ad3",
@@ -197,14 +194,13 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
-
+  //done
   const updateUser = async () => {
     //not for password update... only for user name and keys update
     let body = {
       id: localStorage.getItem("credId"),
       name: "shivaraj1",
-      story3ApiKey:
-        "",
+      story3ApiKey: "",
       palmApiKey: "",
       gpt35Key: "",
       gpt4Key: "",
@@ -240,9 +236,33 @@ const Explore = () => {
     console.log(resWithoutStreaming);
   };
 
+  const getUserStory3Details = async () => {
+    let body = {
+      id: "2350dee2-e469-49a7-903a-7c23da1287c8",
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("api/getStory3UserProfile", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    console.log(resWithoutStreaming);
+  };
+
   return (
     <div>
       <p>explore</p>
+      <button
+        style={{ backgroundColor: "#C1F2B0" }}
+        onClick={() => {
+          getUserStory3Details();
+        }}
+      >
+        story3 user details
+      </button>
       <button
         style={{ backgroundColor: "#C1F2B0" }}
         onClick={() => {
@@ -287,7 +307,6 @@ const Explore = () => {
       >
         get context of a story -test again
       </button>
-
       <p>---- create data to DB api ----</p>
       {/* //thread.. */}
       <button
@@ -307,7 +326,6 @@ const Explore = () => {
       >
         create story node
       </button>
-
       <p>---- update data to DB api ----</p>
       <button
         style={{ backgroundColor: "#C1F2B0" }}
@@ -335,7 +353,6 @@ const Explore = () => {
       >
         update user
       </button>
-
       <p>---- delete data to DB api ----</p>
       <button
         style={{ backgroundColor: "#FF8080" }}
@@ -346,12 +363,15 @@ const Explore = () => {
         delete story
       </button>
       <hr style={{ margin: "5px 30%", border: "none" }} />
-      <button onClick={() => {}}>delete story node</button> --complex logic should be acheived with the UI --implemented
-
-      <p>---- story-3 api  ----</p>
+      <button onClick={() => {}}>delete story node</button> --complex logic
+      should be acheived with the UI --implemented
+      <p>---- story-3 api ----</p>
       <button>create new story /api/v2/stories</button>
       <hr style={{ margin: "5px 30%", border: "none" }} />
-      <button>patch story - complex api - need to fetch data from story3 for some story3 params</button>
+      <button>
+        patch story - complex api - need to fetch data from story3 for some
+        story3 params
+      </button>
       <hr style={{ margin: "5px 30%", border: "none" }} />
       <button>fetch story</button>
       <hr style={{ margin: "5px 30%", border: "none" }} />
