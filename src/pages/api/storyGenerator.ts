@@ -56,19 +56,19 @@ export default async function handler(
       });
 
       const promptTemplates = {
-        startNew: `Write a paragraph of a story that leaves room for more:
+        startNew: `Elaborate the given prompt as a short paragraph with some lines. Donot finish the story keep it open ended:
         
-          {{prompt}}
+          prompt: {{prompt}}
         
-          (Do not try to finish the story. Leave it open for continuation.)`,
+          (Do not try to finish the story. Leave it open for continuation.response should not exceed 800 characters.)`,
 
-        continueExisting: `Continue the following story with a paragraph that leaves room for more, and create a 2-4 word title summarizing the new content, start with the title in first line and continue the story in the second line:
+        continueExisting: `Elaborate and continue the given prompt as a short paragraph with some lines based on the story. ***give a title in the first line and continue the story from the second line***.
+       
+         story: {{previousStory}}
         
-          {{previousStory}}
+         prompt: {{prompt}}
         
-          {{prompt}}
-        
-          (Finish the story only if explicitly asked to in the prompt. Otherwise, leave it open for continuation.)`,
+          (Finish the story only if explicitly asked to in the prompt. Otherwise, leave it open for continuation. response should not exceed 800 characters.)`,
       };
 
       const promptTemplate = promptTemplates[req.body?.templateStyle];

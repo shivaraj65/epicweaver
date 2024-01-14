@@ -2,7 +2,6 @@ TODO:--
 
 create page:-
 
-1 prompt refinement.    --
 2 new node traverse bug. --not necessary
 3 sibbling count indicator. 
 
@@ -28,3 +27,5 @@ login & signup:-
 pageTwo 101 bug high priority.
 
 updating user db reset the local storages
+
+add a static warning alert about 1200 characters limit
