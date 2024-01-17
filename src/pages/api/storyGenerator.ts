@@ -60,15 +60,15 @@ export default async function handler(
         
           prompt: {{prompt}}
         
-          (Do not try to finish the story. Leave it open for continuation.response should not exceed 800 characters.)`,
+          (Do not try to finish the story. Leave it open for continuation.***your response should be only 5 to 8 sentences.***)`,
 
-        continueExisting: `Elaborate and continue the given prompt as a short paragraph with some lines based on the story. ***give a title in the first line and continue the story from the second line***.
+        continueExisting: `Elaborate and continue the given prompt as a short paragraph with a title for the section based on the story. ***give a title in the first line and continue the story from the second line***.
        
          story: {{previousStory}}
         
          prompt: {{prompt}}
         
-          (Finish the story only if explicitly asked to in the prompt. Otherwise, leave it open for continuation. response should not exceed 800 characters.)`,
+          (Finish the story only if explicitly asked to in the prompt. Otherwise, leave it open for continuation.***your response should be only 5 to 8 sentences.***)`,
       };
 
       const promptTemplate = promptTemplates[req.body?.templateStyle];

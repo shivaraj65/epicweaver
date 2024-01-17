@@ -26,7 +26,8 @@ export default async function handler(
         createdAt: new Date().toISOString(),
         userId: req.body?.userId,
         publishedStatus: req.body?.publishedStatus,
-        prompt: req.body?.prompt
+        prompt: req.body?.prompt,
+        publishedHashId:""
       },
     });
     prisma.$disconnect();

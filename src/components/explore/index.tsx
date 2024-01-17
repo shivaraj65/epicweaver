@@ -180,6 +180,7 @@ const Explore = () => {
       title: "test title 101 -udpated",
       publishedStatus: "false",
       prompt: "create story for test title 101 -updated",
+      publishedHashId:""
     };
     const requestOptions: RequestInit = {
       method: "POST",

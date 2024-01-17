@@ -17,30 +17,34 @@ export default async function handler(
     try {
       let user = await prisma.user.findMany({
         where: {
-          id : req.body?.id,
+          id: req.body?.id,
         },
       });
       prisma.$disconnect();
       //call the thirdparty api here... modify the api data..
-      const apiData =
-        {
-            hashParentId: req.body.parentHash,
-            isExtraTwist: req.body.isExtraTwist,
-            title: req.body.title,
-            body: req.body.story
-          }
-
+      const apiData = {
+        hashParentId: req.body.hashParentId,
+        isExtraTwist: true,
+        title: req.body.title,
+        body: req.body.story,
+      };
+      // console.log(apiData)
       const requestOptions: RequestInit = {
         method: "POST",
         headers: {
           "Content-Type": " application/json",
-          "x-auth-token": ""+user[0].story3ApiKey
+          "x-auth-token": "" + user[0].story3ApiKey,
         },
+        body: JSON.stringify(apiData),
       };
-      const response = await fetch(`https://story3.com/api/v2/twists`, requestOptions);
+      const response = await fetch(
+        `https://story3.com/api/v2/twists`,
+        requestOptions
+      );
       const resWithoutStreaming = await new Response(response.body).text();
       const result = await JSON.parse(resWithoutStreaming);
-      console.log("streaming",result);
+      // console.log("streaming", result);
+
       res.status(200).json({ data: result, status: "success" });
     } catch (err) {
       console.log(err);
