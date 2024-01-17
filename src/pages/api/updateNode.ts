@@ -23,7 +23,8 @@ export default async function handler(
         context: req.body?.context,
         minifiedContext: req.body?.title ? req.body?.title :"", 
         publishedStatus: req.body?.publishedStatus,
-        prompt: req.body?.prompt
+        prompt: req.body?.prompt,
+        publishedHashId:req.body?.publishedHashId
       },
     });
     prisma.$disconnect();

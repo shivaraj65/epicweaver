@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import styles from "./workspace.module.css";
 import { useRouter } from "next/router";
 
+
+//send for analysing and progress bar and message system is yet to be done in this page.
+//unpublish api.
+
 import {
   EditOutlined,
   MoreOutlined,
@@ -50,11 +54,9 @@ const Workspace = () => {
   const handleOk = async () => {
     if (modalMethod === 0) {
       await rename(workingIndexData);
-    } else if(modalMethod === 1){
-
-    }else if(modalMethod === 2){
-
-    }else if(modalMethod === 3){
+    } else if (modalMethod === 1) {
+    } else if (modalMethod === 2) {
+    } else if (modalMethod === 3) {
       await deleteStory(workingIndexData);
     }
 
@@ -126,10 +128,10 @@ const Workspace = () => {
     }
   };
 
-  const deleteStory = async (data:any) => {
+  const deleteStory = async (data: any) => {
     //101 fix content related to the story not deleted...
     let body = {
-      id: data.id
+      id: data.id,
     };
     const requestOptions: RequestInit = {
       method: "POST",
@@ -147,6 +149,202 @@ const Workspace = () => {
     } else {
       //101 error
       setWorkingIndexData(null);
+    }
+  };
+
+  const publishStory = async (data: any) => {
+    //fetch context for story.
+    console.log(data);
+    let bronzeLayer: any = await getStoryContext(data.id);
+    console.log(bronzeLayer);
+    if (bronzeLayer === 500) {
+      //101 error...
+      //eat five star do nothing.
+    } else {
+      // let bronzeLen:any = bronzeLayer.length
+
+      console.log("silver layer refinement started");
+      let refinedObject: any = {};
+      let traverseList: any = [];
+      //finding root...
+      for (let i = 0; i < bronzeLayer.length; i++) {
+        if (bronzeLayer[i].previousNodeId === "null") {
+          refinedObject["root"] = [bronzeLayer[i]];
+          traverseList.push(bronzeLayer[i]);
+          break;
+        }
+      }
+      // console.log("found root", traverseList);
+      //process bronze layer to silver layer...
+      for (let i = 0; i < traverseList.length; i++) {
+        let tempArr: any = [];
+        for (let j = i + 1; j < bronzeLayer.length; j++) {
+          if (!traverseList.some((obj: any) => obj.id === bronzeLayer[j].id)) {
+            traverseList.push(bronzeLayer[j]);
+          }
+          if (bronzeLayer[j].previousNodeId === traverseList[i].id) {
+            tempArr.push(bronzeLayer[j]);
+          }
+        }
+        if (tempArr.length > 0) {
+          refinedObject[traverseList[i].id] = tempArr;
+        }
+      }
+      console.log("silver layer data", refinedObject);
+      let silverLayer = refinedObject;
+
+      let ticker: any = silverLayer["root"];
+      let bufferArray: any = silverLayer["root"];
+      let resMapObj:any ={}
+
+      for (let i = 0; i < bufferArray.length; i++) {
+        if (i === 0) {
+          //for root push only...
+          bufferArray = bufferArray.concat(silverLayer[bufferArray[i].id]);
+          console.log("after ",i," buffer arr",bufferArray)
+        } else {
+          if(silverLayer[bufferArray[i].id]){
+            bufferArray = bufferArray.concat(silverLayer[bufferArray[i].id]);
+          }          
+          console.log("after ",i," buffer arr",bufferArray)
+        }
+        let res:any = null
+
+         //push one by one to story3.
+        if(i === 0){
+          res = await pushStory(data.title,bufferArray[i].context);
+          console.log("story push data res:- ",res.hashId)
+          if(res){
+          //save the hashId as obj map.
+          resMapObj[bufferArray[i].id]=res.hashId
+
+          //update the context in the DB..
+          await updateNode(bufferArray[i],res.hashId)
+
+          }else{
+            //error... rollback
+          }
+          
+        }else{
+          res = await pushTwist(bufferArray[i].minifiedContext, bufferArray[i].context, resMapObj[bufferArray[i].previousNodeId]);
+          console.log("twist push data res:- ",res)
+          if(res){
+          //save the hashId as obj map.
+          resMapObj[bufferArray[i].id]=res.hashId
+
+          //update the context in the DB..
+          await updateNode(bufferArray[i],res.hashId)
+
+          }else{
+            //error... rollback
+          }
+        }
+        
+      }
+      console.log(resMapObj);
+      //send for analyzing all the stories.
+      const analyzeArr = Object.values(resMapObj)
+      for(let i=0;i<analyzeArr.length;i++){
+        //call the api...
+      }
+
+
+
+    }
+  };
+
+  const pushStory =async (title:any, story:any)=>{
+    let body = {
+      title: title,
+      story:story
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/postStory", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    if (result.status === "success") {
+      return result.data;
+    } else {
+      //101 error..
+      console.log("api error at fetching data");
+      return null;
+    }
+  }
+
+  const pushTwist = async (title: any,story:any,hashParentId:any) => {
+    let body = {
+      title: title,
+      story:story,
+      hashParentId:hashParentId
+    };
+    // console.log(body,"body")
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/postTwist", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    if (result.status === "success") {
+      return result.data;
+    } else {
+      //101 error..
+      console.log("api error at fetching data");
+      return null;
+    }
+  };
+
+  const updateNode = async (data:any,hash:any) => {
+    let body = {
+      id: data.id,
+      context:data.context,
+      title: data.title,
+      publishedStatus: "true",
+      prompt: data.prompt,
+      publishedHashId:hash
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/updateNode", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    // const result = await JSON.parse(resWithoutStreaming);
+    console.log(resWithoutStreaming);
+  };
+
+  const getStoryContext = async (id: any) => {
+    let body = {
+      storyId: id,
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/getAllStoryContext", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    if (result.status === "success") {
+      return result.data;
+    } else {
+      //101 error..
+      console.log("api error at fetching data");
+      return 500;
     }
   };
 
@@ -227,7 +425,12 @@ const Workspace = () => {
                                         >
                                           <EditOutlined /> Rename
                                         </span>
-                                        <span className={styles.popoverItem}>
+                                        <span
+                                          className={styles.popoverItem}
+                                          onClick={() => {
+                                            publishStory(datai);
+                                          }}
+                                        >
                                           <CloudUploadOutlined /> Publish
                                         </span>
                                         <span className={styles.popoverItem}>

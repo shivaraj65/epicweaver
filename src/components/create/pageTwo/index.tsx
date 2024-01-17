@@ -12,7 +12,7 @@ import {
   Flex,
   Button,
   Spin,
-  message
+  message,
 } from "antd";
 import {
   SendOutlined,
@@ -416,6 +416,7 @@ const PageTwo: React.FC<Props> = (props) => {
         userId: localStorage.getItem("credId"),
         publishedStatus: "false",
         prompt: input,
+        publishedHashId:""
       };
       await createNode(res);
     }
@@ -437,8 +438,8 @@ const PageTwo: React.FC<Props> = (props) => {
     // console.log(resWithoutStreaming);
     if (result.status !== "success") {
       messageApi.open({
-        type: 'error',
-        content: 'Server Error!',
+        type: "error",
+        content: "Server Error!",
       });
     } else {
       //push it to bronzeLayer
@@ -460,6 +461,7 @@ const PageTwo: React.FC<Props> = (props) => {
         title: editTitle,
         publishedStatus: goldLayer[goldLayer.length - 1].publishedStatus,
         prompt: goldLayer[goldLayer.length - 1].prompt,
+        publishedHashId:goldLayer[goldLayer.length - 1].publishedHashId,
       };
       const requestOptions: RequestInit = {
         method: "POST",
@@ -479,8 +481,8 @@ const PageTwo: React.FC<Props> = (props) => {
         setEditingMode([-1, -1]);
       } else {
         messageApi.open({
-          type: 'error',
-          content: 'Server Error',
+          type: "error",
+          content: "Server Error",
         });
         setEditTitle(null);
         setEditStory(null);
@@ -529,8 +531,8 @@ const PageTwo: React.FC<Props> = (props) => {
         updatePrompt(result);
       } else {
         messageApi.open({
-          type: 'error',
-          content: 'Server Error',
+          type: "error",
+          content: "Server Error",
         });
         setEditPrompt(null);
         setEditingMode([-1, -1]);
@@ -549,6 +551,7 @@ const PageTwo: React.FC<Props> = (props) => {
         editingMode[1] === 0
           ? editPrompt
           : goldLayer[goldLayer.length - 1].prompt,
+      publishedHashId: goldLayer[goldLayer.length - 1].publishedHashId,
     };
     const requestOptions: RequestInit = {
       method: "POST",
@@ -567,11 +570,10 @@ const PageTwo: React.FC<Props> = (props) => {
       setEditingMode([-1, -1]);
       setInternalLoading(false);
       //reconstruct the bronze layer... 101
-
     } else {
       messageApi.open({
-        type: 'error',
-        content: 'Server Error',
+        type: "error",
+        content: "Server Error",
       });
       setEditPrompt(null);
       setEditingMode([-1, -1]);
@@ -618,8 +620,8 @@ const PageTwo: React.FC<Props> = (props) => {
       updatePrompt(result);
     } else {
       messageApi.open({
-        type: 'error',
-        content: 'Server Error',
+        type: "error",
+        content: "Server Error",
       });
       setEditingMode([-1, -1]);
       setInternalLoading(false);
@@ -667,16 +669,16 @@ const PageTwo: React.FC<Props> = (props) => {
 
     //update gold layer...
     let newGoldLayer = await goldLayer.slice(0, index);
-    console.log(newGoldLayer)
+    console.log(newGoldLayer);
     //check for sibblings...
     let traverseArr = silverLayer[goldLayer[index].previousNodeId];
     console.log("traverse arr", traverseArr);
     if (traverseArr && traverseArr?.length > 2) {
-      console.log("inside if condition")
+      console.log("inside if condition");
       let ticker = traverseArr[0];
-      if(traverseArr[0].id !== goldLayer[index].id){
+      if (traverseArr[0].id !== goldLayer[index].id) {
         ticker = traverseArr[0];
-      }else{
+      } else {
         ticker = traverseArr[1];
       }
       while (ticker) {
@@ -704,7 +706,7 @@ const PageTwo: React.FC<Props> = (props) => {
 
   return (
     <>
-    {contextHolder}
+      {contextHolder}
       <Breadcrumb style={{ marginBottom: "6px" }}>
         <Breadcrumb.Item
           onClick={() => {

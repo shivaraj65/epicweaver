@@ -42,4 +42,5 @@ model Context {
   userId   String
   publishedStatus String?
   prompt String
+  publishedHashId String?
 }

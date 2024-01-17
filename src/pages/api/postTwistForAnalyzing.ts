@@ -36,6 +36,7 @@ export default async function handler(
           "Content-Type": " application/json",
           "x-auth-token": ""+user[0].story3ApiKey
         },
+        body: JSON.stringify(apiData),
       };
       const response = await fetch(`https://story3.com/api/v2/twists/${req.body.hashId}/publish`, requestOptions);
       const resWithoutStreaming = await new Response(response.body).text();
