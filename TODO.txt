@@ -3,7 +3,7 @@ TODO:--
 create page:-
 
 2 new node traverse bug. --not necessary
-3 sibbling count indicator. 
+3 sibbling count indicator. --on hold
 
 
 workspace:- 
@@ -12,21 +12,18 @@ workspace:-
 5 story3 integration    --in progress
 
 
+
+
 bugs:-
-
-
-landing:-
-1 buttons glitch 
-2 sections incomplete 
-
-login & signup:- 
-1 loaders
 
 pageTwo 101 bug high priority.
 
-updating user db reset the local storages
+updating user db reset the local storages.
 
-add a static warning alert about 1200 characters limit
+add a static warning alert about 1200 characters limit.
 
+notification on the workspace index page. 
+
+published flag display and published buttcon click logic.
 
 conversation retrieval QA chain ---- super high priority. -- did not require it at the moment.

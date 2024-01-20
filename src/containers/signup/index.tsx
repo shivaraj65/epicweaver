@@ -27,10 +27,12 @@ const SignupContainer = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const submit = async () => {
     console.log("submit action");
     console.log(name, email, password);
+    setLoading(true);
     //api call
     if (name !== "" && isValidEmail(email) && isValidPassword(password)) {
       let body = {
@@ -82,6 +84,7 @@ const SignupContainer = () => {
         });
       }
     }
+    setLoading(false);
   };
 
   function isValidEmail(email: string) {
@@ -110,6 +113,7 @@ const SignupContainer = () => {
               onChange={(e) => {
                 setName(e.target.value);
               }}
+              disabled ={loading}
               className={styles.inputStyles}
               size="large"
               placeholder="User name"
@@ -120,6 +124,7 @@ const SignupContainer = () => {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+               disabled ={loading}
               className={styles.inputStyles}
               size="large"
               placeholder="Email ID"
@@ -130,6 +135,7 @@ const SignupContainer = () => {
               onChange={(e) => {
                 setPassword(e.target.value);
               }}
+              disabled ={loading}
               className={styles.inputStyles}
               size="large"
               placeholder="password"
@@ -137,6 +143,7 @@ const SignupContainer = () => {
             <Button
               size="large"
               block
+              disabled ={loading}
               className={styles.signupButton}
               onClick={() => {
                 submit();
