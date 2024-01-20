@@ -7,6 +7,11 @@ import { Button, Row, Col, Card } from "antd";
 
 const { Meta } = Card;
 
+import Dynamic from "@/assets/images/dynamic.jpg";
+import Ai from "@/assets/images/ai.jpg";
+import Diversity from "@/assets/images/diversity.jpg";
+import Interactive from "@/assets/images/interactive.jpg";
+
 const Landing = () => {
   const router = useRouter();
   const [test, settest] = useState(null);
@@ -22,20 +27,18 @@ const Landing = () => {
           </h5>
           <br />
           <div className={styles.buttonContainer}>
-            <Button
+            <button
               className={styles.button1}
-              size="large"
               onClick={() => router.push("/signup")}
             >
               Signup
-            </Button>
-            <Button
+            </button>
+            <button
               className={styles.button2}
-              size="large"
               onClick={() => router.push("/login")}
             >
               Login
-            </Button>
+            </button>
           </div>
 
           <p className={styles.contentB}>
@@ -53,15 +56,18 @@ const Landing = () => {
             <Card
               hoverable
               cover={
-                <img
-                  alt="example"
-                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                <Image
+                  className={styles.logo}
+                  src={Dynamic}
+                  alt="image"
+                  height={240}
+                  priority
                 />
               }
             >
               <Meta
-                title="Europe Street beat"
-                description="www.instagram.com"
+                title="Dynamic Plot Generator"
+                description="Unleash endless possibilities with an AI-powered dynamic plot generator that creates unique and captivating storylines tailored to your preferences."
               />
             </Card>
           </Col>
@@ -69,15 +75,18 @@ const Landing = () => {
             <Card
               hoverable
               cover={
-                <img
-                  alt="example"
-                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                <Image
+                  className={styles.logo}
+                  src={Interactive}
+                  alt="image"
+                  height={240}
+                  priority
                 />
               }
             >
               <Meta
-                title="Europe Street beat"
-                description="www.instagram.com"
+                title="Interactive Storytelling"
+                description="Engage readers with interactive storytelling features, enabling them to make choices that influence the plot's direction, providing a personalized reading experience."
               />
             </Card>
           </Col>
@@ -85,15 +94,18 @@ const Landing = () => {
             <Card
               hoverable
               cover={
-                <img
-                  alt="example"
-                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                <Image
+                  className={styles.logo}
+                  src={Ai}
+                  alt="image"
+                  height={240}
+                  priority
                 />
               }
             >
               <Meta
-                title="Europe Street beat"
-                description="www.instagram.com"
+                title="AI Writing Assistant"
+                description=" Enhance your writing with real-time suggestions, grammar checks, and style recommendations from the AI writing assistant, ensuring polished and engaging narratives"
               />
             </Card>
           </Col>
@@ -101,15 +113,18 @@ const Landing = () => {
             <Card
               hoverable
               cover={
-                <img
-                  alt="example"
-                  src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png"
+                <Image
+                  className={styles.logo}
+                  src={Diversity}
+                  alt="image"
+                  height={240}
+                  priority
                 />
               }
             >
               <Meta
-                title="Europe Street beat"
-                description="www.instagram.com"
+                title="Genre Fusion"
+                description="Break traditional genre boundaries by blending and fusing different genres, allowing users to explore innovative and hybrid story experiences."
               />
             </Card>
           </Col>
@@ -118,11 +133,24 @@ const Landing = () => {
       {/* partnerships */}
       <div className={styles.featureSection}>
         <h4 className={styles.featureHeading}>Collaborations</h4>
-        <span className={styles.partnershipText}>story3 logo here</span>
-        <p className={styles.partnershipText}>
-          Epic Weaver is a AI tool crafted to work with Story3 platform
-        </p>
-        <p className={styles.partnershipText}>Let readers choose the ending!</p>
+
+        <Row>
+          <Col span={12}>
+            <div className={styles.bannerSideText}>
+              <p className={styles.partnershipText}>
+                Epic Weaver is a AI tool crafted to work with Story3 platform
+              </p>
+              <p className={styles.partnershipText}>
+                Created as a part ot the STORY3 hackathon conducted by
+                HackerEarth.
+              </p>
+              <p className={styles.partnershipText}></p>
+            </div>
+          </Col>
+          <Col span={12}>
+            <div className={styles.story3banner}></div>
+          </Col>
+        </Row>
       </div>
 
       {/* footer */}

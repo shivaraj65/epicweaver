@@ -22,10 +22,12 @@ const LoginContainer = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const submit = async () => {
     console.log("submit action");
     console.log(email, password);
+    setLoading(true);
     //api call
     if (email !== "" && password !== "") {
       let body = {
@@ -76,6 +78,7 @@ const LoginContainer = () => {
         });
       }
     }
+    setLoading(false);
   };
 
   return (
@@ -97,6 +100,7 @@ const LoginContainer = () => {
               className={styles.inputStyles}
               size="large"
               placeholder="Email ID"
+              disabled ={loading}
               prefix={<UserOutlined />}
             />
             <Input.Password
@@ -105,12 +109,14 @@ const LoginContainer = () => {
                 setPassword(e.target.value);
               }}
               className={styles.inputStyles}
+              disabled ={loading}
               size="large"
               placeholder="password"
             />
             <Button
               size="large"
               block
+              disabled ={loading}
               className={styles.loginButton}
               onClick={() => {
                 submit();
