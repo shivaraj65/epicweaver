@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import styles from "./workspace.module.css";
 import { useRouter } from "next/router";
 
-
 //send for analysing and progress bar and message system is yet to be done in this page.
 //unpublish api.
 
@@ -16,7 +15,7 @@ import {
   RestOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { Row, Col, Popover, Badge, Skeleton, Input } from "antd";
+import { Row, Col, Popover, Badge, Skeleton, Input, Progress } from "antd";
 import { Button, Modal } from "antd";
 
 import userCreds from "@/store/userCreds";
@@ -46,6 +45,10 @@ const Workspace = () => {
   const [modalMethod, setModalMethod] = useState<any>(-1);
 
   const [input, setInput] = useState("");
+
+  const [publishStatus, setPublishStatus] = useState("")
+
+  const [publishProgress, setPublishProgress] = useState<any>([0, 0]);
 
   const showModal = (type: any) => {
     setIsModalOpen(true);
@@ -155,7 +158,9 @@ const Workspace = () => {
   const publishStory = async (data: any) => {
     //fetch context for story.
     console.log(data);
+    setPublishStatus("Fetching Data");
     let bronzeLayer: any = await getStoryContext(data.id);
+    setPublishProgress([0, bronzeLayer.length]);
     console.log(bronzeLayer);
     if (bronzeLayer === 500) {
       //101 error...
@@ -195,68 +200,72 @@ const Workspace = () => {
 
       let ticker: any = silverLayer["root"];
       let bufferArray: any = silverLayer["root"];
-      let resMapObj:any ={}
+      let resMapObj: any = {};
 
+      setPublishStatus("Sending Story to STORY3")
       for (let i = 0; i < bufferArray.length; i++) {
+        setPublishProgress([i,bufferArray.length])
         if (i === 0) {
           //for root push only...
           bufferArray = bufferArray.concat(silverLayer[bufferArray[i].id]);
-          console.log("after ",i," buffer arr",bufferArray)
+          console.log("after ", i, " buffer arr", bufferArray);
         } else {
-          if(silverLayer[bufferArray[i].id]){
+          if (silverLayer[bufferArray[i].id]) {
             bufferArray = bufferArray.concat(silverLayer[bufferArray[i].id]);
-          }          
-          console.log("after ",i," buffer arr",bufferArray)
+          }
+          console.log("after ", i, " buffer arr", bufferArray);
         }
-        let res:any = null
+        let res: any = null;
 
-         //push one by one to story3.
-        if(i === 0){
-          res = await pushStory(data.title,bufferArray[i].context);
-          console.log("story push data res:- ",res.hashId)
-          if(res){
-          //save the hashId as obj map.
-          resMapObj[bufferArray[i].id]=res.hashId
+        //push one by one to story3.
+        if (i === 0) {
+          res = await pushStory(data.title, bufferArray[i].context);
+          console.log("story push data res:- ", res.hashId);
+          if (res) {
+            //save the hashId as obj map.
+            resMapObj[bufferArray[i].id] = res.hashId;
 
-          //update the context in the DB..
-          await updateNode(bufferArray[i],res.hashId)
-
-          }else{
+            //update the context in the DB..
+            await updateNode(bufferArray[i], res.hashId);
+          } else {
             //error... rollback
           }
-          
-        }else{
-          res = await pushTwist(bufferArray[i].minifiedContext, bufferArray[i].context, resMapObj[bufferArray[i].previousNodeId]);
-          console.log("twist push data res:- ",res)
-          if(res){
-          //save the hashId as obj map.
-          resMapObj[bufferArray[i].id]=res.hashId
+        } else {
+          res = await pushTwist(
+            bufferArray[i].minifiedContext,
+            bufferArray[i].context,
+            resMapObj[bufferArray[i].previousNodeId]
+          );
+          console.log("twist push data res:- ", res);
+          if (res) {
+            //save the hashId as obj map.
+            resMapObj[bufferArray[i].id] = res.hashId;
 
-          //update the context in the DB..
-          await updateNode(bufferArray[i],res.hashId)
-
-          }else{
+            //update the context in the DB..
+            await updateNode(bufferArray[i], res.hashId);
+          } else {
             //error... rollback
           }
         }
-        
       }
+      setPublishProgress([0,0])
       console.log(resMapObj);
+      setPublishStatus("Analysing the Twists.")
       //send for analyzing all the stories.
-      const analyzeArr = Object.values(resMapObj)
-      for(let i=0;i<analyzeArr.length;i++){
-        //call the api...
+      const analyzeArr = Object.values(resMapObj);
+      for (let i = 0; i < analyzeArr.length; i++) {
+        setPublishProgress([i,analyzeArr.length])
+        analysing(analyzeArr[i]);
       }
-
-
-
     }
+    setPublishProgress([0,0]);
+    //send the message for publishing the story from story3 manually.
   };
 
-  const pushStory =async (title:any, story:any)=>{
+  const pushStory = async (title: any, story: any) => {
     let body = {
       title: title,
-      story:story
+      story: story,
     };
     const requestOptions: RequestInit = {
       method: "POST",
@@ -275,13 +284,13 @@ const Workspace = () => {
       console.log("api error at fetching data");
       return null;
     }
-  }
+  };
 
-  const pushTwist = async (title: any,story:any,hashParentId:any) => {
+  const pushTwist = async (title: any, story: any, hashParentId: any) => {
     let body = {
       title: title,
-      story:story,
-      hashParentId:hashParentId
+      story: story,
+      hashParentId: hashParentId,
     };
     // console.log(body,"body")
     const requestOptions: RequestInit = {
@@ -303,14 +312,36 @@ const Workspace = () => {
     }
   };
 
-  const updateNode = async (data:any,hash:any) => {
+  const analysing = async (id: any) => {
+    let body = {
+      hashId: id,
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/postTwistForAnalyzing", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    if (result.status === "success") {
+      //continue...
+     
+    } else {
+      //error 101 notification...
+    }
+  };
+
+  const updateNode = async (data: any, hash: any) => {
     let body = {
       id: data.id,
-      context:data.context,
+      context: data.context,
       title: data.title,
       publishedStatus: "true",
       prompt: data.prompt,
-      publishedHashId:hash
+      publishedHashId: hash,
     };
     const requestOptions: RequestInit = {
       method: "POST",
@@ -365,6 +396,19 @@ const Workspace = () => {
           </div>
           <div className={styles.recentWorks}>
             <p className={styles.sectionTitle}>Your recent works</p>
+            {
+              publishProgress[1] !==0 ?
+              <div>
+                <p>{publishStatus !=="" ? publishStatus : null}</p>
+                <Progress
+                  percent={Math.floor(
+                    (publishProgress[0] / publishProgress[1]) * 100
+                  )}
+                  strokeColor={{ "0%": "#108ee9", "100%": "#87d068" }}
+                />
+              </div>
+              :null
+            }
 
             <Row>
               {data &&
@@ -427,7 +471,7 @@ const Workspace = () => {
                                         </span>
                                         <span
                                           className={styles.popoverItem}
-                                          onClick={() => {
+                                          onClick={async () => {
                                             publishStory(datai);
                                           }}
                                         >

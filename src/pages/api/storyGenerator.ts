@@ -2,6 +2,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import { GooglePaLM } from "langchain/llms/googlepalm";
+import { PromptTemplate } from "@langchain/core/prompts";
+import {
+  ChatPromptTemplate,
+  HumanMessagePromptTemplate,
+  SystemMessagePromptTemplate,
+} from "langchain/prompts";
+import { LLMChain } from "langchain/chains";
 
 type Data = {
   title: any;
@@ -56,27 +63,68 @@ export default async function handler(
       });
 
       const promptTemplates = {
-        startNew: `Elaborate the given prompt as a short paragraph with some lines. Donot finish the story keep it open ended:
-        
+        startNew:
+         `Elaborate the given prompt as a short paragraph with some lines. Donot finish the story keep it open ended:
+          =========
           prompt: {{prompt}}
-        
+          =========
           (Do not try to finish the story. Leave it open for continuation.***your response should be only 5 to 8 sentences.***)`,
 
-        continueExisting: `Elaborate and continue the given prompt as a short paragraph with a title for the section based on the story. ***give a title in the first line and continue the story from the second line***.
-       
-         story: {{previousStory}}
-        
-         prompt: {{prompt}}
-        
+        continueExisting:
+          `Elaborate and continue the given prompt as a short paragraph with a title for the section based on the story. ***give a title in the first line and continue the story from the second line***.
+          =======
+         story: {previousStory}
+          =======
+         prompt: {prompt}
+          =======
           (Finish the story only if explicitly asked to in the prompt. Otherwise, leave it open for continuation.***your response should be only 5 to 8 sentences.***)`,
       };
 
+      // const promptAdvanceTemplates = {
+      //   startNew: ChatPromptTemplate([
+      //     SystemMessagePromptTemplate.fromTemplate(
+      //       `
+      //       you are a story writing bot, you will provide a starting piece of story in a short paragraph with 5 to 8 lines.
+      //       -donot try to finish the story. keep it open ended for continuation.
+      //       -you are supposed to elaborate the given user prompt as a story.
+      //       `
+      //     ),
+      //     HumanMessagePromptTemplate("{input}"),
+      //   ]),
+      //   continueExisting: ChatPromptTemplate([
+      //     SystemMessagePromptTemplate.fromTemplate(
+      //       `
+      //       you are a story writing bot, you will provide the continuation of the story {previousStory} in a short paragraph with 5 to 8 lines.
+      //       -donot try to finish the story. keep it open ended for continuation.
+      //       -you are supposed to elaborate the given user prompt as a story.
+      //       -give a title for the pargagraph in the first line and continue the story from the second line.
+      //       - if the user asks you to continue the story them feel free to create yout own plots and twists.
+      //       -if the user asks to end the story, then do the same.
+      //       `
+      //     ),
+      //     HumanMessagePromptTemplate("{input}"),
+      //   ]),
+      // };
+
       const promptTemplate = promptTemplates[req.body?.templateStyle];
+      // const llm = new LLMChain({ llm: new OpenAI(), promptTemplate });
+      // const result = await llm.call(
+      //   (input = req.body?.prompt),
+      //   (previousStory = req.body?.previousStory)
+      // );
+      // console.log(result);
+
+      // res.status(500).json({ title: null, story: null, status: "error" });
+
       if (req.body?.templateStyle === "startNew") {
         let filledPrompt = promptTemplate.replace(
-          "{{prompt}}",
+          "{prompt}",
           req.body?.prompt
         );
+        // let filledPrompt = await promptTemplate.format({
+        //   prompt: req.body?.prompt,
+        // });
+        console.log("filled prompt----",filledPrompt)
         const result = await model.call(filledPrompt);
         console.log(result);
         //parser logic...
@@ -89,8 +137,14 @@ export default async function handler(
         res.status(200).json({ title: null, story: story, status: "success" });
       } else {
         let filledPrompt = promptTemplate
-          .replace("{{prompt}}", req.body?.prompt)
-          .replace("{{previousStory}}", req.body?.previousStory || "");
+          .replace("{prompt}", req.body?.prompt)
+          .replace("{previousStory}", req.body?.previousStory || "");
+
+        // let filledPrompt = await promptTemplate.format({
+        //   prompt: req.body?.prompt,
+        //   previousStory: req.body?.previousStory,
+        // });
+        
         const result = await model.call(filledPrompt);
         console.log(result);
         //parser logic...
