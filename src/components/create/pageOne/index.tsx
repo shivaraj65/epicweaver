@@ -47,7 +47,7 @@ const PageOne: React.FC<Props> = (props) => {
 
   const validate = async () => {
     if (props.storyTitle !== "") {
-      if (props.selectedModel === "PALM") {
+      // if (props.selectedModel === "PALM") {
         //api
         let body = {
           title: props.storyTitle,
@@ -82,12 +82,12 @@ const PageOne: React.FC<Props> = (props) => {
             content: "Api Error! refersh the page again.",
           });
         }
-      } else {
-        messageApi.open({
-          type: "warning",
-          content: "Current version only supports PALM model.",
-        });
-      }
+      // } else {
+      //   messageApi.open({
+      //     type: "warning",
+      //     content: "Current version only supports PALM model.",
+      //   });
+      // }
     } else {
       messageApi.open({
         type: "warning",
@@ -152,9 +152,9 @@ const PageOne: React.FC<Props> = (props) => {
                       selected={props.selectedModel}
                       onChangeSelected={props.setSelectedModel}
                     />
-                    <span className={styles.warningtext}>
+                    {/* <span className={styles.warningtext}>
                       *GPT models are on the pipeline. Available Soon!
-                    </span>
+                    </span> */}
                   </div>
                   <div className={styles.tabsContainer}>
                     <p className={styles.selectorText}>select a Temperature</p>

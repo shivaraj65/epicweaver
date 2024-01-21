@@ -38,29 +38,49 @@ export default async function handler(
       let key =
         req.body?.model === "PALM"
           ? user[0]?.palmApiKey
-          : req.body?.model === "GPT35"
+          : req.body?.model === "GPT 3.5"
           ? user[0]?.gpt35Key
-          : req.body?.model === "GPT4"
+          : req.body?.model === "GPT 4"
           ? user[0]?.gpt4Key
           : null;
       if (!key) {
         res.status(204).json({ title: null, story: null, status: "KEY_ERROR" });
       }
       // console.log("key--", key);
-      const model = new GooglePaLM({
-        apiKey: key,
-        temperature: req.body?.temperature,
-        modelName: "models/text-bison-001",
-        // maxOutputTokens: 1024,
-        // topK: 40,
-        // topP: 1,
-        // safetySettings: [
-        //   {
-        //     category: "HARM_CATEGORY_DANGEROUS",
-        //     threshold: "BLOCK_MEDIUM_AND_ABOVE",
-        //   },
-        // ],
-      });
+      let model:any
+      if(req.body?.model === "PALM"){
+        model = new GooglePaLM({
+          apiKey: key,
+          temperature: req.body?.temperature,
+          modelName: "models/text-bison-001",
+          // maxOutputTokens: 1024,
+          // topK: 40,
+          // topP: 1,
+          // safetySettings: [
+          //   {
+          //     category: "HARM_CATEGORY_DANGEROUS",
+          //     threshold: "BLOCK_MEDIUM_AND_ABOVE",
+          //   },
+          // ],
+        });
+  
+      }else if (req.body?.model === "GPT 3.5"){
+        model = new OpenAI({
+          modelName: "gpt-3.5-turbo-instruct", 
+          temperature: 0.9,
+          openAIApiKey: key, 
+        });
+      }else if(req.body?.model === "GPT 4"){
+        const model = new OpenAI({
+          modelName: "gpt-4", 
+          temperature: 0.9,
+          openAIApiKey: "YOUR-API-KEY", 
+        });
+      }
+      
+      const gpt35Model = ""
+
+      const gpt4Model = ""
 
       const promptTemplates = {
         startNew:

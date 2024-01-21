@@ -1,22 +1,7 @@
 TODO:--
 
-create page:-
-
-2 new node traverse bug. --not necessary
-3 sibbling count indicator. --on hold
-
 
 workspace:- 
-
-1 functionality         -- 3/4 done
-2 story3 integration    --in progress
  (Unpublish API is pending)
 
-
-
-bugs:-
-
-updating user db reset the local storages.
-
-enable gpt models.
 
