@@ -36,7 +36,7 @@ const Dashboard = () => {
   );
 
   const menuItems: any = [
-    { name: "Explore", icon: <CompassOutlined /> },
+    // { name: "Explore", icon: <CompassOutlined /> },
     { name: "Workspace", icon: <FolderOpenOutlined /> },
     { name: "Settings", icon: <ControlOutlined /> },
     { name: "Create story", icon: <EditOutlined /> },
@@ -101,8 +101,8 @@ const Dashboard = () => {
                             styles.createButton
                         }
                         onClick={() => {
-                          if (index === 3) {
-                            setSelectedMenu(1);
+                          if (index === 2) {
+                            setSelectedMenu(0);
                             setPageFlag(1);
                             router.push("/dashboard");
                           } else {
@@ -139,11 +139,11 @@ const Dashboard = () => {
               }}
             >
               {selectedMenu === 0 ? (
-                <Explore />
+                 <Workspace />
               ) : selectedMenu === 1 ? (
-                <Workspace />
-              ) : selectedMenu === 2 ? (
                 <Settings />
+              ) : selectedMenu === 2 ? (
+                 <Explore />
               ) : null}
             </div>
           </Layout>

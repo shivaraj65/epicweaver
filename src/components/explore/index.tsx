@@ -256,7 +256,9 @@ const Explore = () => {
   return (
     <div>
       <p>explore</p>
-      <button
+
+
+      {/* <button
         style={{ backgroundColor: "#C1F2B0" }}
         onClick={() => {
           getUserStory3Details();
@@ -272,8 +274,9 @@ const Explore = () => {
       >
         story generate
       </button>
-      <hr style={{ margin: "5px 30%", border: "none" }} />
-      <button
+      <hr style={{ margin: "5px 30%", border: "none" }} /> */}
+
+      {/* <button
         style={{ backgroundColor: "#C1F2B0" }}
         onClick={() => {
           submitGen2();
@@ -290,8 +293,8 @@ const Explore = () => {
       >
         fetch all stories
       </button>
-      <hr style={{ margin: "5px 30%", border: "none" }} />
-      <button
+      <hr style={{ margin: "5px 30%", border: "none" }} /> */}
+      {/* <button
         style={{ backgroundColor: "#C1F2B0" }}
         onClick={() => {
           getStoriesByUserId();
@@ -308,9 +311,9 @@ const Explore = () => {
       >
         get context of a story -test again
       </button>
-      <p>---- create data to DB api ----</p>
+      <p>---- create data to DB api ----</p> */}
       {/* //thread.. */}
-      <button
+      {/* <button
         style={{ backgroundColor: "#C1F2B0" }}
         onClick={() => {
           createStory();
@@ -345,8 +348,8 @@ const Explore = () => {
       >
         update story node
       </button>
-      <hr style={{ margin: "5px 30%", border: "none" }} />
-      <button
+      <hr style={{ margin: "5px 30%", border: "none" }} /> */}
+      {/* <button
         style={{ backgroundColor: "#C1F2B0" }}
         onClick={() => {
           updateUser();
@@ -384,7 +387,7 @@ const Explore = () => {
       <hr style={{ margin: "5px 30%", border: "none" }} />
       <button>publish twist</button>
       <hr style={{ margin: "5px 30%", border: "none" }} />
-      <button>un publish twist</button>
+      <button>un publish twist</button> */}
     </div>
   );
 };
