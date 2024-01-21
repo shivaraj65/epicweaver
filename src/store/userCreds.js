@@ -3,7 +3,7 @@ import { create } from "zustand";
 // depricated.. now used for app wide state management
 const userCreds = create((set) => ({
 
-  selectedMenu: 1,
+  selectedMenu: 0,
   setSelectedMenu: (data) => set({ selectedMenu: data }),
 
   pageFlag: 0,
