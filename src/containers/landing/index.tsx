@@ -135,7 +135,7 @@ const Landing = () => {
         <h4 className={styles.featureHeading}>Collaborations</h4>
 
         <Row>
-          <Col span={12}>
+          <Col span={11}>
             <div className={styles.bannerSideText}>
               <p className={styles.partnershipText}>
                 Epic Weaver is a AI tool crafted to work with Story3 platform
@@ -147,7 +147,7 @@ const Landing = () => {
               <p className={styles.partnershipText}></p>
             </div>
           </Col>
-          <Col span={12}>
+          <Col span={13}>
             <div className={styles.story3banner}></div>
           </Col>
         </Row>

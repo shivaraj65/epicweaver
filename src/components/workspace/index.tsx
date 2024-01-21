@@ -15,7 +15,16 @@ import {
   RestOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { Row, Col, Popover, Badge, Skeleton, Input, Progress } from "antd";
+import {
+  Row,
+  Col,
+  Popover,
+  Badge,
+  Skeleton,
+  Input,
+  Progress,
+  message,
+} from "antd";
 import { Button, Modal } from "antd";
 
 import userCreds from "@/store/userCreds";
@@ -36,6 +45,8 @@ const Workspace = () => {
     ])
   );
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [data, setData] = useState<any>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,7 +57,7 @@ const Workspace = () => {
 
   const [input, setInput] = useState("");
 
-  const [publishStatus, setPublishStatus] = useState("")
+  const [publishStatus, setPublishStatus] = useState("");
 
   const [publishProgress, setPublishProgress] = useState<any>([0, 0]);
 
@@ -98,7 +109,10 @@ const Workspace = () => {
     if (result.status === "success") {
       setData(result.data);
     } else {
-      alert("error message"); //101
+      messageApi.open({
+        type: "error",
+        content: "server error! try again later.",
+      });
     }
   };
 
@@ -123,10 +137,53 @@ const Workspace = () => {
     //reload api..
     if (result.status === "success") {
       loadData();
+      messageApi.open({
+        type: "success",
+        content: "Renamed successfully",
+      });
       setInput("");
       setWorkingIndexData(null);
     } else {
-      //101 error
+      messageApi.open({
+        type: "error",
+        content: "server error! try again later.",
+      });
+      setWorkingIndexData(null);
+    }
+  };
+
+  const updatePublishedStory = async (data: any, status: any) => {
+    let body = {
+      id: data.id,
+      title: data.title,
+      model: data.model,
+      temperature: data.temperature,
+      publishedStatus: status,
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/updateStory", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    //reload api..
+    if (result.status === "success") {
+      loadData();
+      messageApi.open({
+        type: "success",
+        content: "Renamed successfully",
+      });
+      setInput("");
+      setWorkingIndexData(null);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "server error! try again later.",
+      });
       setWorkingIndexData(null);
     }
   };
@@ -148,16 +205,24 @@ const Workspace = () => {
     const result = await JSON.parse(resWithoutStreaming);
     if (result.status === "success") {
       loadData();
+      messageApi.open({
+        type: "success",
+        content: "Deleted successfully",
+      });
       setWorkingIndexData(null);
     } else {
-      //101 error
+      messageApi.open({
+        type: "error",
+        content: "server error! try again later.",
+      });
       setWorkingIndexData(null);
     }
   };
 
   const publishStory = async (data: any) => {
-    //fetch context for story.
-    console.log(data);
+    if(data.publishedStatus !== "true"){
+       //fetch context for story.
+    // console.log(data);
     setPublishStatus("Fetching Data");
     let bronzeLayer: any = await getStoryContext(data.id);
     setPublishProgress([0, bronzeLayer.length]);
@@ -202,9 +267,9 @@ const Workspace = () => {
       let bufferArray: any = silverLayer["root"];
       let resMapObj: any = {};
 
-      setPublishStatus("Sending Story to STORY3")
+      setPublishStatus("Sending Story to STORY3");
       for (let i = 0; i < bufferArray.length; i++) {
-        setPublishProgress([i,bufferArray.length])
+        setPublishProgress([i, bufferArray.length]);
         if (i === 0) {
           //for root push only...
           bufferArray = bufferArray.concat(silverLayer[bufferArray[i].id]);
@@ -248,18 +313,26 @@ const Workspace = () => {
           }
         }
       }
-      setPublishProgress([0,0])
+      setPublishProgress([0, 0]);
       console.log(resMapObj);
-      setPublishStatus("Analysing the Twists.")
+      setPublishStatus("Analysing the Twists.");
       //send for analyzing all the stories.
       const analyzeArr = Object.values(resMapObj);
       for (let i = 0; i < analyzeArr.length; i++) {
-        setPublishProgress([i,analyzeArr.length])
+        setPublishProgress([i, analyzeArr.length]);
         analysing(analyzeArr[i]);
       }
+      //update story status to published..
+      await updatePublishedStory(data, "true");
     }
-    setPublishProgress([0,0]);
+    setPublishProgress([0, 0]);
     //send the message for publishing the story from story3 manually.
+    }else{
+      messageApi.open({
+        type: "warning",
+        content: "Already published",
+      });
+    }
   };
 
   const pushStory = async (title: any, story: any) => {
@@ -280,8 +353,10 @@ const Workspace = () => {
     if (result.status === "success") {
       return result.data;
     } else {
-      //101 error..
-      console.log("api error at fetching data");
+      messageApi.open({
+        type: "error",
+        content: "server error",
+      });
       return null;
     }
   };
@@ -306,8 +381,10 @@ const Workspace = () => {
     if (result.status === "success") {
       return result.data;
     } else {
-      //101 error..
-      console.log("api error at fetching data");
+      messageApi.open({
+        type: "error",
+        content: "server error",
+      });
       return null;
     }
   };
@@ -328,9 +405,11 @@ const Workspace = () => {
     const result = await JSON.parse(resWithoutStreaming);
     if (result.status === "success") {
       //continue...
-     
     } else {
-      //error 101 notification...
+      messageApi.open({
+        type: "error",
+        content: "server error",
+      });
     }
   };
 
@@ -353,7 +432,7 @@ const Workspace = () => {
     const response = await fetch("/api/updateNode", requestOptions);
     const resWithoutStreaming = await new Response(response.body).text();
     // const result = await JSON.parse(resWithoutStreaming);
-    console.log(resWithoutStreaming);
+    // console.log(resWithoutStreaming);
   };
 
   const getStoryContext = async (id: any) => {
@@ -373,14 +452,17 @@ const Workspace = () => {
     if (result.status === "success") {
       return result.data;
     } else {
-      //101 error..
-      console.log("api error at fetching data");
+      messageApi.open({
+        type: "error",
+        content: "server error",
+      });
       return 500;
     }
   };
 
   return (
     <div className={styles.workspaceContainer}>
+      {contextHolder}
       {pageFlag === 0 ? (
         <>
           <div className={styles.header}>
@@ -396,10 +478,9 @@ const Workspace = () => {
           </div>
           <div className={styles.recentWorks}>
             <p className={styles.sectionTitle}>Your recent works</p>
-            {
-              publishProgress[1] !==0 ?
+            {publishProgress[1] !== 0 ? (
               <div>
-                <p>{publishStatus !=="" ? publishStatus : null}</p>
+                <p>{publishStatus !== "" ? publishStatus : null}</p>
                 <Progress
                   percent={Math.floor(
                     (publishProgress[0] / publishProgress[1]) * 100
@@ -407,8 +488,7 @@ const Workspace = () => {
                   strokeColor={{ "0%": "#108ee9", "100%": "#87d068" }}
                 />
               </div>
-              :null
-            }
+            ) : null}
 
             <Row>
               {data &&
@@ -434,7 +514,78 @@ const Workspace = () => {
                             </div>
                           </Col>
                           <Col span={16}>
-                            <Badge.Ribbon text="Published" color="cyan">
+                            {datai?.publishedStatus === "true" ? (
+                              <Badge.Ribbon text="Published" color="cyan">
+                                <div className={styles.StoryContentDiv}>
+                                  <div>
+                                    <p
+                                      className={styles.storyTitle}
+                                      onClick={() => {
+                                        setStoryData(datai);
+                                        setPageFlag(1);
+                                      }}
+                                    >
+                                      {datai.title}
+                                    </p>
+                                  </div>
+                                  <div className={styles.storyActionItems}>
+                                    {/* <EditOutlined
+                                  className={styles.storyContorlIcon}
+                                /> */}
+                                    {/* <ReadOutlined
+                                className={styles.storyContorlIcon}
+                              /> */}
+
+                                    <Popover
+                                      content={
+                                        <div>
+                                          <span
+                                            className={styles.popoverItem}
+                                            onClick={async () => {
+                                              //101 send message if already published.
+                                              setWorkingIndexData(datai);
+                                              await setModalMethod(0);
+                                              showModal(0);
+                                            }}
+                                          >
+                                            <EditOutlined /> Rename
+                                          </span>
+                                          <span
+                                            className={styles.popoverItem}
+                                            onClick={async () => {
+                                              publishStory(datai);
+                                            }}
+                                          >
+                                            <CloudUploadOutlined /> Publish
+                                          </span>
+                                          <span className={styles.popoverItem}>
+                                            <EyeInvisibleOutlined /> Unpublish
+                                          </span>
+                                          {/* <hr style={{color:"#b4b4b4", width:"20%",margin:"auto"}} /> */}
+                                          {/* <span className={styles.popoverItemDelete}> <RestOutlined /> delete from story3</span> */}
+                                          <span
+                                            className={styles.popoverItemDelete}
+                                            onClick={async () => {
+                                              setWorkingIndexData(datai);
+                                              setModalMethod(3);
+                                              showModal(3);
+                                            }}
+                                          >
+                                            <DeleteOutlined /> Delete Story
+                                          </span>
+                                        </div>
+                                      }
+                                      trigger="hover"
+                                      placement="right"
+                                    >
+                                      <MoreOutlined
+                                        className={styles.storyContorlIcon}
+                                      />
+                                    </Popover>
+                                  </div>
+                                </div>
+                              </Badge.Ribbon>
+                            ) : (
                               <div className={styles.StoryContentDiv}>
                                 <div>
                                   <p
@@ -503,7 +654,7 @@ const Workspace = () => {
                                   </Popover>
                                 </div>
                               </div>
-                            </Badge.Ribbon>
+                            )}
                           </Col>
                         </Row>
                       </div>

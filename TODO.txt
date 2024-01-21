@@ -8,22 +8,15 @@ create page:-
 
 workspace:- 
 
-3 functionality         -- 3/4 done
-5 story3 integration    --in progress
-
+1 functionality         -- 3/4 done
+2 story3 integration    --in progress
+ (Unpublish API is pending)
 
 
 
 bugs:-
 
-pageTwo 101 bug high priority.
-
 updating user db reset the local storages.
 
-add a static warning alert about 1200 characters limit.
+enable gpt models.
 
-notification on the workspace index page. 
-
-published flag display and published buttcon click logic.
-
-conversation retrieval QA chain ---- super high priority. -- did not require it at the moment.
