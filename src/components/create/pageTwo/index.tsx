@@ -13,6 +13,7 @@ import {
   Button,
   Spin,
   message,
+  Alert
 } from "antd";
 import {
   SendOutlined,
@@ -215,6 +216,7 @@ const PageTwo: React.FC<Props> = (props) => {
         const result = await JSON.parse(resWithoutStreaming);
         //storing the raw data to bronzeLayer...
         setBronzeLayer(result.data);
+        setLoading(false);
         // console.log("bronze data", result.data);
       }
     })();
@@ -222,7 +224,7 @@ const PageTwo: React.FC<Props> = (props) => {
 
   useEffect(() => {
     (() => {
-      setLoading(true);
+      // setLoading(true);
       if (bronzeLayer) {
         console.log("silver layer refinement started");
         let refinedObject: any = {};
@@ -264,10 +266,9 @@ const PageTwo: React.FC<Props> = (props) => {
             ticker = refinedObject[ticker[0].id];
           }
           console.log("gold layer data", refinedArray);
-          setGoldlayer(refinedArray);
+          setGoldlayer(refinedArray);  
         }
       }
-      setLoading(false);
     })();
   }, [bronzeLayer]);
 
@@ -541,6 +542,26 @@ const PageTwo: React.FC<Props> = (props) => {
     }
   };
 
+  const reconstructBronze =async()=>{
+    if (storyData) {
+      let body = {
+        storyId: storyData.id,
+      };
+      const requestOptions: RequestInit = {
+        method: "POST",
+        headers: {
+          "Content-Type": " application/json; charset=utf-8",
+        },
+        body: JSON.stringify(body),
+      };
+      const response = await fetch("/api/getAllStoryContext", requestOptions);
+      const resWithoutStreaming = await new Response(response.body).text();
+      const result = await JSON.parse(resWithoutStreaming);
+      //storing the raw data to bronzeLayer...
+      setBronzeLayer(result.data);
+    }
+  }
+
   const updatePrompt = async (data: any) => {
     let body = {
       id: goldLayer[goldLayer.length - 1].id,
@@ -570,6 +591,8 @@ const PageTwo: React.FC<Props> = (props) => {
       setEditingMode([-1, -1]);
       setInternalLoading(false);
       //reconstruct the bronze layer... 101
+      await reconstructBronze()
+
     } else {
       messageApi.open({
         type: "error",
@@ -945,6 +968,7 @@ const PageTwo: React.FC<Props> = (props) => {
                 </div>
               );
             })}
+
           {loading ? (
             <div className={styles.chatContainer} style={{ padding: "16px" }}>
               <Skeleton
@@ -955,6 +979,7 @@ const PageTwo: React.FC<Props> = (props) => {
               />
             </div>
           ) : null}
+          <Alert className={styles.alertMessage} message="The model might generate Twists more than 1200 characters which is not accepted by story3 at the moment. regrenerate if required." type="warning" />
         </div>
 
         <div className={styles.floater}>

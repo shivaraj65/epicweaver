@@ -61,6 +61,13 @@ const Settings = () => {
       const result = await JSON.parse(resWithoutStreaming);
 
       if (result.status === "success") {
+        localStorage.setItem('credId', result.data.id);
+        localStorage.setItem('credName', result.data.name);
+        localStorage.setItem('credEmail', result.data.email);
+        localStorage.setItem('story3ApiKey', result.data.story3ApiKey);
+        localStorage.setItem('palmApiKey', result.data.palmApiKey);
+        localStorage.setItem('gpt35Key', result.data.gpt35Key);
+        localStorage.setItem('gpt4Key', result.data.gpt4Key);
         console.log(result);
         setIsModalOpen(false);
         fetchUserDetails();

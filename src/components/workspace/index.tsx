@@ -15,13 +15,28 @@ import {
   RestOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { Row, Col, Popover, Badge, Skeleton, Input, Progress } from "antd";
+import {
+  Row,
+  Col,
+  Popover,
+  Badge,
+  Skeleton,
+  Input,
+  Progress,
+  message,
+} from "antd";
 import { Button, Modal } from "antd";
+
+import Image from "next/image";
 
 import userCreds from "@/store/userCreds";
 import { useShallow } from "zustand/react/shallow";
 
 import Create from "@/components/create";
+
+import Creative from "@/assets/icons/wand.svg";
+import Balanced from "@/assets/icons/balanced.svg";
+import Precise from "@/assets/icons/precise.svg";
 
 // const Dummy: any = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -36,6 +51,8 @@ const Workspace = () => {
     ])
   );
 
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [data, setData] = useState<any>(null);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,7 +63,7 @@ const Workspace = () => {
 
   const [input, setInput] = useState("");
 
-  const [publishStatus, setPublishStatus] = useState("")
+  const [publishStatus, setPublishStatus] = useState("");
 
   const [publishProgress, setPublishProgress] = useState<any>([0, 0]);
 
@@ -98,7 +115,10 @@ const Workspace = () => {
     if (result.status === "success") {
       setData(result.data);
     } else {
-      alert("error message"); //101
+      messageApi.open({
+        type: "error",
+        content: "server error! try again later.",
+      });
     }
   };
 
@@ -123,10 +143,53 @@ const Workspace = () => {
     //reload api..
     if (result.status === "success") {
       loadData();
+      messageApi.open({
+        type: "success",
+        content: "Renamed successfully",
+      });
       setInput("");
       setWorkingIndexData(null);
     } else {
-      //101 error
+      messageApi.open({
+        type: "error",
+        content: "server error! try again later.",
+      });
+      setWorkingIndexData(null);
+    }
+  };
+
+  const updatePublishedStory = async (data: any, status: any) => {
+    let body = {
+      id: data.id,
+      title: data.title,
+      model: data.model,
+      temperature: data.temperature,
+      publishedStatus: status,
+    };
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: {
+        "Content-Type": " application/json; charset=utf-8",
+      },
+      body: JSON.stringify(body),
+    };
+    const response = await fetch("/api/updateStory", requestOptions);
+    const resWithoutStreaming = await new Response(response.body).text();
+    const result = await JSON.parse(resWithoutStreaming);
+    //reload api..
+    if (result.status === "success") {
+      loadData();
+      messageApi.open({
+        type: "success",
+        content: "Renamed successfully",
+      });
+      setInput("");
+      setWorkingIndexData(null);
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "server error! try again later.",
+      });
       setWorkingIndexData(null);
     }
   };
@@ -148,118 +211,136 @@ const Workspace = () => {
     const result = await JSON.parse(resWithoutStreaming);
     if (result.status === "success") {
       loadData();
+      messageApi.open({
+        type: "success",
+        content: "Deleted successfully",
+      });
       setWorkingIndexData(null);
     } else {
-      //101 error
+      messageApi.open({
+        type: "error",
+        content: "server error! try again later.",
+      });
       setWorkingIndexData(null);
     }
   };
 
   const publishStory = async (data: any) => {
-    //fetch context for story.
-    console.log(data);
-    setPublishStatus("Fetching Data");
-    let bronzeLayer: any = await getStoryContext(data.id);
-    setPublishProgress([0, bronzeLayer.length]);
-    console.log(bronzeLayer);
-    if (bronzeLayer === 500) {
-      //101 error...
-      //eat five star do nothing.
-    } else {
-      // let bronzeLen:any = bronzeLayer.length
+    if (data.publishedStatus !== "true") {
+      //fetch context for story.
+      // console.log(data);
+      setPublishStatus("Fetching Data");
+      let bronzeLayer: any = await getStoryContext(data.id);
+      setPublishProgress([0, bronzeLayer.length]);
+      console.log(bronzeLayer);
+      if (bronzeLayer === 500) {
+        //101 error...
+        //eat five star do nothing.
+      } else {
+        // let bronzeLen:any = bronzeLayer.length
 
-      console.log("silver layer refinement started");
-      let refinedObject: any = {};
-      let traverseList: any = [];
-      //finding root...
-      for (let i = 0; i < bronzeLayer.length; i++) {
-        if (bronzeLayer[i].previousNodeId === "null") {
-          refinedObject["root"] = [bronzeLayer[i]];
-          traverseList.push(bronzeLayer[i]);
-          break;
-        }
-      }
-      // console.log("found root", traverseList);
-      //process bronze layer to silver layer...
-      for (let i = 0; i < traverseList.length; i++) {
-        let tempArr: any = [];
-        for (let j = i + 1; j < bronzeLayer.length; j++) {
-          if (!traverseList.some((obj: any) => obj.id === bronzeLayer[j].id)) {
-            traverseList.push(bronzeLayer[j]);
-          }
-          if (bronzeLayer[j].previousNodeId === traverseList[i].id) {
-            tempArr.push(bronzeLayer[j]);
+        console.log("silver layer refinement started");
+        let refinedObject: any = {};
+        let traverseList: any = [];
+        //finding root...
+        for (let i = 0; i < bronzeLayer.length; i++) {
+          if (bronzeLayer[i].previousNodeId === "null") {
+            refinedObject["root"] = [bronzeLayer[i]];
+            traverseList.push(bronzeLayer[i]);
+            break;
           }
         }
-        if (tempArr.length > 0) {
-          refinedObject[traverseList[i].id] = tempArr;
+        // console.log("found root", traverseList);
+        //process bronze layer to silver layer...
+        for (let i = 0; i < traverseList.length; i++) {
+          let tempArr: any = [];
+          for (let j = i + 1; j < bronzeLayer.length; j++) {
+            if (
+              !traverseList.some((obj: any) => obj.id === bronzeLayer[j].id)
+            ) {
+              traverseList.push(bronzeLayer[j]);
+            }
+            if (bronzeLayer[j].previousNodeId === traverseList[i].id) {
+              tempArr.push(bronzeLayer[j]);
+            }
+          }
+          if (tempArr.length > 0) {
+            refinedObject[traverseList[i].id] = tempArr;
+          }
         }
-      }
-      console.log("silver layer data", refinedObject);
-      let silverLayer = refinedObject;
+        console.log("silver layer data", refinedObject);
+        let silverLayer = refinedObject;
 
-      let ticker: any = silverLayer["root"];
-      let bufferArray: any = silverLayer["root"];
-      let resMapObj: any = {};
+        let ticker: any = silverLayer["root"];
+        let bufferArray: any = silverLayer["root"];
+        let resMapObj: any = {};
 
-      setPublishStatus("Sending Story to STORY3")
-      for (let i = 0; i < bufferArray.length; i++) {
-        setPublishProgress([i,bufferArray.length])
-        if (i === 0) {
-          //for root push only...
-          bufferArray = bufferArray.concat(silverLayer[bufferArray[i].id]);
-          console.log("after ", i, " buffer arr", bufferArray);
-        } else {
-          if (silverLayer[bufferArray[i].id]) {
+        setPublishStatus("Sending Story to STORY3");
+        for (let i = 0; i < bufferArray.length; i++) {
+          setPublishProgress([i, bufferArray.length]);
+          if (i === 0) {
+            //for root push only...
             bufferArray = bufferArray.concat(silverLayer[bufferArray[i].id]);
-          }
-          console.log("after ", i, " buffer arr", bufferArray);
-        }
-        let res: any = null;
-
-        //push one by one to story3.
-        if (i === 0) {
-          res = await pushStory(data.title, bufferArray[i].context);
-          console.log("story push data res:- ", res.hashId);
-          if (res) {
-            //save the hashId as obj map.
-            resMapObj[bufferArray[i].id] = res.hashId;
-
-            //update the context in the DB..
-            await updateNode(bufferArray[i], res.hashId);
+            console.log("after ", i, " buffer arr", bufferArray);
           } else {
-            //error... rollback
+            if (silverLayer[bufferArray[i].id]) {
+              bufferArray = bufferArray.concat(silverLayer[bufferArray[i].id]);
+            }
+            console.log("after ", i, " buffer arr", bufferArray);
           }
-        } else {
-          res = await pushTwist(
-            bufferArray[i].minifiedContext,
-            bufferArray[i].context,
-            resMapObj[bufferArray[i].previousNodeId]
-          );
-          console.log("twist push data res:- ", res);
-          if (res) {
-            //save the hashId as obj map.
-            resMapObj[bufferArray[i].id] = res.hashId;
+          let res: any = null;
 
-            //update the context in the DB..
-            await updateNode(bufferArray[i], res.hashId);
+          //push one by one to story3.
+          if (i === 0) {
+            res = await pushStory(data.title, bufferArray[i].context);
+            console.log("story push data res:- ", res.hashId);
+            if (res) {
+              //save the hashId as obj map.
+              resMapObj[bufferArray[i].id] = res.hashId;
+
+              //update the context in the DB..
+              await updateNode(bufferArray[i], res.hashId);
+            } else {
+              //error... rollback
+            }
           } else {
-            //error... rollback
+            res = await pushTwist(
+              bufferArray[i].minifiedContext,
+              bufferArray[i].context,
+              resMapObj[bufferArray[i].previousNodeId]
+            );
+            console.log("twist push data res:- ", res);
+            if (res) {
+              //save the hashId as obj map.
+              resMapObj[bufferArray[i].id] = res.hashId;
+
+              //update the context in the DB..
+              await updateNode(bufferArray[i], res.hashId);
+            } else {
+              //error... rollback
+            }
           }
         }
+        setPublishProgress([0, 0]);
+        console.log(resMapObj);
+        setPublishStatus("Analysing the Twists.");
+        //send for analyzing all the stories.
+        const analyzeArr = Object.values(resMapObj);
+        for (let i = 0; i < analyzeArr.length; i++) {
+          setPublishProgress([i, analyzeArr.length]);
+          analysing(analyzeArr[i]);
+        }
+        //update story status to published..
+        await updatePublishedStory(data, "true");
       }
-      setPublishProgress([0,0])
-      console.log(resMapObj);
-      setPublishStatus("Analysing the Twists.")
-      //send for analyzing all the stories.
-      const analyzeArr = Object.values(resMapObj);
-      for (let i = 0; i < analyzeArr.length; i++) {
-        setPublishProgress([i,analyzeArr.length])
-        analysing(analyzeArr[i]);
-      }
+      setPublishProgress([0, 0]);
+      //send the message for publishing the story from story3 manually.
+    } else {
+      messageApi.open({
+        type: "warning",
+        content: "Already published",
+      });
     }
-    setPublishProgress([0,0]);
-    //send the message for publishing the story from story3 manually.
   };
 
   const pushStory = async (title: any, story: any) => {
@@ -280,8 +361,10 @@ const Workspace = () => {
     if (result.status === "success") {
       return result.data;
     } else {
-      //101 error..
-      console.log("api error at fetching data");
+      messageApi.open({
+        type: "error",
+        content: "server error",
+      });
       return null;
     }
   };
@@ -306,8 +389,10 @@ const Workspace = () => {
     if (result.status === "success") {
       return result.data;
     } else {
-      //101 error..
-      console.log("api error at fetching data");
+      messageApi.open({
+        type: "error",
+        content: "server error",
+      });
       return null;
     }
   };
@@ -328,9 +413,11 @@ const Workspace = () => {
     const result = await JSON.parse(resWithoutStreaming);
     if (result.status === "success") {
       //continue...
-     
     } else {
-      //error 101 notification...
+      messageApi.open({
+        type: "error",
+        content: "server error",
+      });
     }
   };
 
@@ -353,7 +440,7 @@ const Workspace = () => {
     const response = await fetch("/api/updateNode", requestOptions);
     const resWithoutStreaming = await new Response(response.body).text();
     // const result = await JSON.parse(resWithoutStreaming);
-    console.log(resWithoutStreaming);
+    // console.log(resWithoutStreaming);
   };
 
   const getStoryContext = async (id: any) => {
@@ -373,14 +460,17 @@ const Workspace = () => {
     if (result.status === "success") {
       return result.data;
     } else {
-      //101 error..
-      console.log("api error at fetching data");
+      messageApi.open({
+        type: "error",
+        content: "server error",
+      });
       return 500;
     }
   };
 
   return (
     <div className={styles.workspaceContainer}>
+      {contextHolder}
       {pageFlag === 0 ? (
         <>
           <div className={styles.header}>
@@ -395,11 +485,10 @@ const Workspace = () => {
             </div>
           </div>
           <div className={styles.recentWorks}>
-            <p className={styles.sectionTitle}>Your recent works</p>
-            {
-              publishProgress[1] !==0 ?
+            <p className={styles.sectionTitle}>Recent works</p>
+            {publishProgress[1] !== 0 ? (
               <div>
-                <p>{publishStatus !=="" ? publishStatus : null}</p>
+                <p>{publishStatus !== "" ? publishStatus : null}</p>
                 <Progress
                   percent={Math.floor(
                     (publishProgress[0] / publishProgress[1]) * 100
@@ -407,8 +496,7 @@ const Workspace = () => {
                   strokeColor={{ "0%": "#108ee9", "100%": "#87d068" }}
                 />
               </div>
-              :null
-            }
+            ) : null}
 
             <Row>
               {data &&
@@ -434,7 +522,117 @@ const Workspace = () => {
                             </div>
                           </Col>
                           <Col span={16}>
-                            <Badge.Ribbon text="Published" color="cyan">
+                            {datai?.publishedStatus === "true" ? (
+                              <Badge.Ribbon text="Published" color="cyan">
+                                <div className={styles.StoryContentDiv}>
+                                  <div>
+                                    <p
+                                      className={styles.storyTitle}
+                                      onClick={() => {
+                                        setStoryData(datai);
+                                        setPageFlag(1);
+                                      }}
+                                    >
+                                      {datai.title}
+                                    </p>
+                                  </div>
+                                  <div className={styles.storyActionItems}>
+                                    {/* <EditOutlined
+                                  className={styles.storyContorlIcon}
+                                /> */}
+                                    {/* <ReadOutlined
+                                className={styles.storyContorlIcon}
+                              /> */}
+                                    <div className={styles.actioItemsContainer}>
+                                      <p className={styles.actionItemModel}>
+                                        {datai.model}
+                                      </p>
+                                      <p className={styles.actionItemModel1}>
+                                        {datai.temperature === "0.1" ? (
+                                          <Image
+                                            src={Precise}
+                                            width={13}
+                                            height={13}
+                                            alt={"icon"}
+                                          ></Image>
+                                        ) : datai.temperature === "0.5" ? (
+                                          <Image
+                                            src={Balanced}
+                                            width={13}
+                                            height={13}
+                                            alt={"icon"}
+                                          ></Image>
+                                        ) : datai.temperature === "1" ? (
+                                          <Image
+                                            src={Creative}
+                                            width={13}
+                                            height={13}
+                                            alt={"icon"}
+                                          ></Image>
+                                        ) : null}
+                                      </p>
+
+                                      <Popover
+                                        content={
+                                          <div>
+                                            <span
+                                              className={styles.popoverItem}
+                                              onClick={async () => {
+                                                //101 send message if already published.
+                                                setWorkingIndexData(datai);
+                                                await setModalMethod(0);
+                                                showModal(0);
+                                              }}
+                                            >
+                                              <EditOutlined /> Rename
+                                            </span>
+                                            <span
+                                              className={styles.popoverItem}
+                                              onClick={async () => {
+                                                publishStory(datai);
+                                              }}
+                                            >
+                                              <CloudUploadOutlined /> Publish
+                                            </span>
+                                            <span
+                                              className={styles.popoverItem}
+                                              onClick={async () => {
+                                                messageApi.open({
+                                                  type: "warning",
+                                                  content: "Coming soon!",
+                                                });
+                                              }}
+                                            >
+                                              <EyeInvisibleOutlined /> Unpublish
+                                            </span>
+                                            {/* <hr style={{color:"#b4b4b4", width:"20%",margin:"auto"}} /> */}
+                                            {/* <span className={styles.popoverItemDelete}> <RestOutlined /> delete from story3</span> */}
+                                            <span
+                                              className={
+                                                styles.popoverItemDelete
+                                              }
+                                              onClick={async () => {
+                                                setWorkingIndexData(datai);
+                                                setModalMethod(3);
+                                                showModal(3);
+                                              }}
+                                            >
+                                              <DeleteOutlined /> Delete Story
+                                            </span>
+                                          </div>
+                                        }
+                                        trigger="hover"
+                                        placement="right"
+                                      >
+                                        <MoreOutlined
+                                          className={styles.storyContorlIcon}
+                                        />
+                                      </Popover>
+                                    </div>
+                                  </div>
+                                </div>
+                              </Badge.Ribbon>
+                            ) : (
                               <div className={styles.StoryContentDiv}>
                                 <div>
                                   <p
@@ -454,56 +652,93 @@ const Workspace = () => {
                                   {/* <ReadOutlined
                                 className={styles.storyContorlIcon}
                               /> */}
+                                  <div className={styles.actioItemsContainer}>
+                                    <p className={styles.actionItemModel}>
+                                      {datai.model}
+                                    </p>
+                                    <p className={styles.actionItemModel1}>
+                                      {datai.temperature === "0.1" ? (
+                                        <Image
+                                          src={Precise}
+                                          width={13}
+                                          height={13}
+                                          alt={"icon"}
+                                        ></Image>
+                                      ) : datai.temperature === "0.5" ? (
+                                        <Image
+                                          src={Balanced}
+                                          width={13}
+                                          height={13}
+                                          alt={"icon"}
+                                        ></Image>
+                                      ) : datai.temperature === "1" ? (
+                                        <Image
+                                          src={Creative}
+                                          width={13}
+                                          height={13}
+                                          alt={"icon"}
+                                        ></Image>
+                                      ) : null}
+                                    </p>
 
-                                  <Popover
-                                    content={
-                                      <div>
-                                        <span
-                                          className={styles.popoverItem}
-                                          onClick={async () => {
-                                            //101 send message if already published.
-                                            setWorkingIndexData(datai);
-                                            await setModalMethod(0);
-                                            showModal(0);
-                                          }}
-                                        >
-                                          <EditOutlined /> Rename
-                                        </span>
-                                        <span
-                                          className={styles.popoverItem}
-                                          onClick={async () => {
-                                            publishStory(datai);
-                                          }}
-                                        >
-                                          <CloudUploadOutlined /> Publish
-                                        </span>
-                                        <span className={styles.popoverItem}>
-                                          <EyeInvisibleOutlined /> Unpublish
-                                        </span>
-                                        {/* <hr style={{color:"#b4b4b4", width:"20%",margin:"auto"}} /> */}
-                                        {/* <span className={styles.popoverItemDelete}> <RestOutlined /> delete from story3</span> */}
-                                        <span
-                                          className={styles.popoverItemDelete}
-                                          onClick={async () => {
-                                            setWorkingIndexData(datai);
-                                            setModalMethod(3);
-                                            showModal(3);
-                                          }}
-                                        >
-                                          <DeleteOutlined /> Delete Story
-                                        </span>
-                                      </div>
-                                    }
-                                    trigger="hover"
-                                    placement="right"
-                                  >
-                                    <MoreOutlined
-                                      className={styles.storyContorlIcon}
-                                    />
-                                  </Popover>
+                                    <Popover
+                                      content={
+                                        <div>
+                                          <span
+                                            className={styles.popoverItem}
+                                            onClick={async () => {
+                                              //101 send message if already published.
+                                              setWorkingIndexData(datai);
+                                              await setModalMethod(0);
+                                              showModal(0);
+                                            }}
+                                          >
+                                            <EditOutlined /> Rename
+                                          </span>
+                                          <span
+                                            className={styles.popoverItem}
+                                            onClick={async () => {
+                                              publishStory(datai);
+                                            }}
+                                          >
+                                            <CloudUploadOutlined /> Publish
+                                          </span>
+                                          <span
+                                            className={styles.popoverItem}
+                                            onClick={async () => {
+                                              messageApi.open({
+                                                type: "warning",
+                                                content: "Coming soon!",
+                                              });
+                                            }}
+                                          >
+                                            <EyeInvisibleOutlined /> Unpublish
+                                          </span>
+                                          {/* <hr style={{color:"#b4b4b4", width:"20%",margin:"auto"}} /> */}
+                                          {/* <span className={styles.popoverItemDelete}> <RestOutlined /> delete from story3</span> */}
+                                          <span
+                                            className={styles.popoverItemDelete}
+                                            onClick={async () => {
+                                              setWorkingIndexData(datai);
+                                              setModalMethod(3);
+                                              showModal(3);
+                                            }}
+                                          >
+                                            <DeleteOutlined /> Delete Story
+                                          </span>
+                                        </div>
+                                      }
+                                      trigger="hover"
+                                      placement="right"
+                                    >
+                                      <MoreOutlined
+                                        className={styles.storyContorlIcon}
+                                      />
+                                    </Popover>
+                                  </div>
                                 </div>
                               </div>
-                            </Badge.Ribbon>
+                            )}
                           </Col>
                         </Row>
                       </div>

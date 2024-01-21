@@ -115,10 +115,10 @@
 }
 
 .story3banner {
-  height: 300px;
+  height: 55vh;
   width: auto;
   background-image: url("../../assets/images/story3Banner.jpg");
-  background-position: center;
+  background-position:left;
   background-repeat: no-repeat;
   background-size: cover;
 }
