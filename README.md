@@ -19,6 +19,22 @@
 <h2>Project Screenshots:</h2>
 
 ![landing_1](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/landing_1.png?raw=true)
+
+![landing_2](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/landing_2.png?raw=true)
+
+![landing_3](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/landing_3.png?raw=true)
+
+![login](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/login.png?raw=true)
+
+![signup](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/signup.png?raw=true)
+
+![workspace](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/workspace.png?raw=true)
+
+![create_1](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/create_p1.png?raw=true)
+
+![create_2](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/create_p2.png?raw=true)
+
+![create_3](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/create_p3.png?raw=true)
   
   
 <h2>🧐 Features</h2>
