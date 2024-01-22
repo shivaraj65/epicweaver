@@ -18,7 +18,7 @@
 
 <h2>Project Screenshots:</h2>
 
-![landing_1](https://drive.google.com/file/d/1Nsm7NKXk1ZM57XSaYMZ5hd7HaA2f14Qh/view?usp=drive_link)
+![landing_1](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/landing_1.png?raw=true)
   
   
 <h2>🧐 Features</h2>
