@@ -1,6 +1,6 @@
 <p align="center"><img src="https://socialify.git.ci/shivaraj65/epicweaver/image?language=1&amp;name=1&amp;owner=1&amp;stargazers=1&amp;theme=Dark" alt="project-image"></p>
 
-<p id="description">Epicweaver is a Plugin app for Story3.com. which is a platform that helps Creators/ Authors to leverage AI to generate Stories and uplaod them to Story3 platform. this is a production ready / deployed version. you can view the content @ https://epicweaver.vercel.app</p>
+<p id="description">Epicweaver is a Plugin app for Story3.com. which is a platform that helps Creators/ Authors to leverage AI to generate Stories and upload them to Story3 platform. this is a production ready / deployed version. you can view the App @ https://epicweaver.vercel.app</p>
 
 <p align="center">
 <img src="https://img.shields.io/badge/build-passing-brightgreen" alt="shields">  &nbsp;
@@ -12,7 +12,7 @@
 
 <h2>🚀 Demo</h2>
 
-[demo video ✅](![workspace](https://github.com/shivaraj65/epicweaver/blob/main/screenshots/landing_3.png?raw=true))
+[https://drive.google.com/file/d/1lcFkSlpTtI7SkdR_c6Ng5n00w0B8u-Fr/view?usp=drive_link](https://drive.google.com/file/d/1lcFkSlpTtI7SkdR_c6Ng5n00w0B8u-Fr/view?usp=drive_link)
 
 <h2>Project Screenshots : 📷</h2>
 
