@@ -4,7 +4,13 @@
 
 <p id="description">Epicweaver is a Plugin app for Story3.com. which is a platform that helps Creators/ Authors to leverage AI to generate Stories and uplaod them to Story3 platform. this is a production ready / deployed version. you can view the content @ https://epicweaver.vercel.app</p>
 
-<p align="center"><img src="https://img.shields.io/badge/build-passing-brightgreen" alt="shields"><img src="https://img.shields.io/github/commit-activity/t/shivaraj65/epicweaver " alt="shields"><img src="https://img.shields.io/github/contributors/shivaraj65/epicweaver" alt="shields"><img src="https://img.shields.io/github/deployments/shivaraj65/epicweaver/production?label=PRODUCTION" alt="shields"><img src="https://img.shields.io/github/repo-size/shivaraj65/epicweaver" alt="shields"><img src="https://img.shields.io/github/package-json/v/shivaraj65/epicweaver/main" alt="shields"></p>
+<p align="center">
+<img src="https://img.shields.io/badge/build-passing-brightgreen" alt="shields">  &nbsp;
+<img src="https://img.shields.io/github/commit-activity/t/shivaraj65/epicweaver " alt="shields">  &nbsp;
+<img src="https://img.shields.io/github/contributors/shivaraj65/epicweaver" alt="shields">  &nbsp;
+<img src="https://img.shields.io/github/deployments/shivaraj65/epicweaver/production?label=PRODUCTION" alt="shields">  &nbsp;
+<img src="https://img.shields.io/github/repo-size/shivaraj65/epicweaver" alt="shields">  &nbsp;
+<img src="https://img.shields.io/github/package-json/v/shivaraj65/epicweaver/main" alt="shields"></p>
 
 <h2>🚀 Demo</h2>
 
@@ -12,10 +18,7 @@
 
 <h2>Project Screenshots:</h2>
 
-<img src="https://drive.google.com/file/d/1Nsm7NKXk1ZM57XSaYMZ5hd7HaA2f14Qh/view?usp=drive_link" alt="project-screenshot" width="600" height="500/">
-
-<img src="https://drive.google.com/file/d/1g_yfIYbcE2bWqvADx3nBUmDaqCJfX-Tn/view?usp=sharing" alt="project-screenshot" width="600" height="500/">
-
+![landing_1](https://drive.google.com/file/d/1Nsm7NKXk1ZM57XSaYMZ5hd7HaA2f14Qh/view?usp=drive_link)
   
   
 <h2>🧐 Features</h2>
