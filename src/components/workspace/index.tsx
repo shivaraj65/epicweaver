@@ -181,7 +181,7 @@ const Workspace = () => {
       loadData();
       messageApi.open({
         type: "success",
-        content: "Renamed successfully",
+        content: "Story Published successfully",
       });
       setInput("");
       setWorkingIndexData(null);
@@ -425,7 +425,7 @@ const Workspace = () => {
     let body = {
       id: data.id,
       context: data.context,
-      title: data.title,
+      title: data.minifiedContext,
       publishedStatus: "true",
       prompt: data.prompt,
       publishedHashId: hash,
