@@ -9,6 +9,7 @@ import {
   SystemMessagePromptTemplate,
 } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
+import { OpenAI } from "@langchain/openai";
 
 type Data = {
   title: any;
